@@ -2,5 +2,6 @@
 *.in
 *.json
 *.txt
+*.exe
 tests
 AHC
