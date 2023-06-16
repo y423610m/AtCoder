@@ -7,5 +7,6 @@
 *.html
 *.js
 *.js.*
+SUB.cpp
 tests
 AHC
