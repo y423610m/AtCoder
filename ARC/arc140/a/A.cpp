@@ -1,0 +1,101 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int MOD = 998'244'353;
+//const int MOD = 1000'000'007;
+
+const int INF = (1<<30)-1;
+const long long LINF = (1LL<<62)-1;
+
+#define rep(i, n) for (int i = 0; i < (int)(n); i++)
+#define repi(i, a, n) for (int i = a; i < (int)(n); i++)
+#define repll(i, n) for (ll i = 0; i < (ll)(n); i++)
+#define repill(i, a, n) for (ll i = a; i < (ll)(n); i++)
+#define pb(a) push_back(a)
+#define PS(a) cout<<(a)<<" ";
+#define PL(a) cout<<(a)<<endl;
+#define ES(a) cerr<<(a)<<" ";
+#define EL(a) cerr<<(a)<<endl;
+#define END(a) {PL(a) return;}
+#define FI first
+#define SE second
+#define ALL(a)  (a).begin(),(a).end()
+#define RALL(a)  (a).rbegin(),(a).rend()
+#define SORT(a) sort(a.begin(), a.end());
+#define REVERSE(a) reverse(a.begin(), a.end());
+#define ERASE(a) a.erase(unique(a.begin(), a.end()), a.end());
+using ll = long long;
+using P = pair<int, int>;
+template <class T> using V = vector<T>;
+template< typename T >ostream &operator<<(ostream &os, const vector< T > &v) {for(int i = 0; i < (int) v.size(); i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
+template< typename T >istream &operator>>(istream &is, vector< T > &v) {for(T &in : v) is >> in;return is;}
+template <class T, class U> void chmin(T& t, const U& u) {if (t > u) t = u;}
+template <class T, class U> void chmax(T& t, const U& u) {if (t < u) t = u;}
+
+int f(string s){
+    set<string> st;
+    st.insert(s);
+    rep(i,s.size()){
+        if(true || s[0]!=s[i]){
+            string t = s;
+            rotate(t.begin(), t.begin()+i, t.end());
+            st.insert(t);
+            EL(t)
+        }
+    }
+    return st.size();
+}
+
+void solve() {
+
+    int n,k;cin>>n>>k;
+    string s; cin>>s;
+    V<V<int>> pos(26);
+    rep(i,s.size()) pos[(int)s[i]-'a'].push_back(i);
+    //rep(i,26) ES(pos[i].size())
+
+    priority_queue<P,V<P>,greater<P>> que;
+    int Mchar = -1; int Mnum = -1;
+    rep(i,26) if(pos[i].size()>0){
+        que.push({pos[i].size(),i});
+        if((int)pos[i].size()>Mnum){
+            Mnum = pos[i].size();
+            Mchar = i;
+        }
+    }
+    ES(Mnum) ES("Mchar") EL(Mchar) 
+
+    int ans = 0;
+    while(!que.empty()){
+        P p = que.top(); que.pop();
+        int num = p.first; int c = p.second;
+        if(num<=k){
+            rep(i,pos[c].size()){
+                s[pos[c][i]] = 'a'+Mchar;
+                k--;
+            }
+        }
+        else{
+            rep(i,pos[c].size()){
+                s[pos[c][i]] = 'a'+Mchar;
+                k--;
+                if(k==0) break;
+            }
+        }
+        if(k==0) break;
+    }
+    EL(s)
+    PL(f(s))
+
+
+    return;
+}
+
+int main() {
+   std::cin.tie(nullptr);
+   std::ios_base::sync_with_stdio(false);
+   std::cout << std::fixed << std::setprecision(15);
+   int TT = 1; //cin>>TT;
+   for(int tt = 0; tt<TT; tt++) solve();
+   return 0;
+}

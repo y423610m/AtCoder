@@ -1,0 +1,205 @@
+#include <bits/stdc++.h>
+using namespace std;
+// #include <atcoder/all>
+// using namespace atcoder;
+
+using ll = long long;
+const ll MOD = 998'244'353;
+//const ll MOD = 1000'000'007;
+
+const ll INF = (1LL<<30)-1;
+const ll LINF = (1LL<<62)-1;
+
+//#define _GLIBCXX_DEQUE_BUF_SIZE 512
+
+// int:[-2'147'483'648 : 2'147'483'647]
+// ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
+
+#define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
+#define repi(i, a, n) for (ll i = a; i < (ll)(n); i++)
+#define pb(a) push_back(a)
+#define PS(a) cout<<(a)<<" ";
+#define PL(a) cout<<(a)<<endl;
+#define endl "\n"
+//#define ONLINE_JUDGE 1
+#ifdef ONLINE_JUDGE
+    #define ES(a) while(0){}
+    #define EL(a) while(0){}
+#else
+    #define NAME(a) #a
+    #define ES(a) cerr<<NAME(a)<<": "<<(a)<<" ";
+    #define EL(a) cerr<<NAME(a)<<": "<<(a)<<endl;
+#endif
+#define END(a) {PL(a) return;}
+#define RES(a) cerr<<"\r"<<NAME(a)<<": "<<(a)<<"   ";
+#define fi first
+#define se second
+#define ALL(a)  (a).begin(),(a).end()
+#define RALL(a)  (a).rbegin(),(a).rend()
+#define SORT(a) sort(a.begin(), a.end());
+#define REVERSE(a) reverse(a.begin(), a.end());
+#define ERASE(a) a.erase(unique(a.begin(), a.end()), a.end());
+using Pii = pair<int, int>;
+using Pll = pair<ll,ll>;
+template <class T> using V = vector<T>;
+template<typename T >ostream &operator<<(ostream &os, const vector< T > &v) {for(int i = 0; i < (int) v.size(); i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
+template<typename T >istream &operator>>(istream &is, vector< T > &v) {for(T &in : v) is >> in;return is;}
+template<typename T, typename U > ostream &operator<<(ostream &os, const pair<T,U> &p) {os << p.first << ' ' << p.second; return os;}
+template<typename T, typename U > istream &operator>>(istream &is, pair<T,U> &p) { is >> p.first >> p.second; return is;}
+template<class T, class U> void chmin(T& t, const U& u) {if (t > u) t = u;}
+template<class T, class U> void chmax(T& t, const U& u) {if (t < u) t = u;}
+
+#include "graph/graph_template.hpp"
+/*
+    int N,M; cin>>N>>M;
+    Edges<int> E = readE<int>(M, -1, true);//weighted?
+    Graph<int> G(N, E, true);//directed?
+    //Graph<int> G(N); G.read(M, -1, true, true);
+*/
+
+#if __has_include(<atcoder/dsu>)
+#include <atcoder/dsu>
+using namespace atcoder;
+//dsu DSU(n);
+//DSU.merge(a,b);
+//if(DSU.same(a,b)){}
+#endif
+
+#if __has_include(<atcoder/scc>)
+#include <atcoder/scc>
+using namespace atcoder;
+/*
+scc_graph sg(N);
+sg.add_edge(u,v);
+vector<vector<int>> scc = sg.scc();
+//トポロジカルソート済み
+//辺のない頂点は長さ1のリストとなる．
+*/
+#endif
+
+void solve() {
+
+    ll N,M; cin>>N>>M;
+    ll Q; cin>>Q;
+    Edges<ll> E = readE<ll>(M, -1, true);//weighted?
+    Graph<ll> G(N);
+    for(const auto& e:E){
+        G[e.from].push_back({e.from, e.to, e.cost});
+        G[e.to].push_back({e.to, e.from, -e.cost});
+    }
+
+    dsu UF(N);
+    for(const auto& e:E){
+        UF.merge(e.from, e.to);
+    }
+
+    V<bool> searched(N,false);
+    V<bool> Infinity(N,false);
+    V<bool> visited1(N,false);
+    V<bool> visited2(N,false);
+    V<ll> MaxDist(N, -LINF);
+    V<ll> MinDist(N, LINF);
+    V<ll> from(N,-1);
+    priority_queue<Pll> que1;//dist, p
+    priority_queue<Pll,V<Pll>,greater<Pll>> que2;//dist, p
+    {
+        dsu tree(N+1);
+        for(const auto& e:E) tree.merge(e.from, e.to);
+        
+        rep(s,N) if(!searched[UF.leader(s)]){
+            searched[UF.leader(s)] = true;
+            from[UF.leader(s)] = s;
+            que1.push({0,s});
+            que2.push({0,s});
+            MaxDist[s] = 0;
+            MinDist[s] = 0;
+        
+            bool inf = false;
+            //最大コスト
+            while(!que1.empty()&&!inf){
+                auto [d,p] = que1.top(); que1.pop();
+                if(d<MaxDist[p]) continue;
+                if(visited1[p]){
+                    inf = true;
+                    break;
+                }
+                visited1[p] = true;
+                for(const auto& e:G[p]){
+                    from[e.to] = s;
+                    if(MaxDist[e.to]<d+e.cost){
+                        MaxDist[e.to] = d+e.cost;
+                        if(e.to==s) inf = true;
+                        else que1.push({MaxDist[e.to], e.to});
+                    }
+                }
+                if(inf) break;
+            }
+            while(!que2.empty()&&!inf){
+                auto [d,p] = que2.top(); que2.pop();
+                if(d>MinDist[p]) continue;
+                if(visited2[p]){
+                    inf = true;
+                    break;
+                }
+                visited2[p] = true;
+                for(const auto& e:G[p]){
+                    from[e.to] = s;
+                    if(MinDist[e.to]>d+e.cost){
+                        MinDist[e.to] = d+e.cost;
+                        //if(e.to==s) inf = true;
+                        //else 
+                        que2.push({MinDist[e.to], e.to});
+                    }
+                }
+                if(inf) break;
+            }
+            while(!que1.empty()) que1.pop();
+            while(!que2.empty()) que2.pop();
+
+            if(inf){
+                Infinity[UF.leader(s)] = true;
+            }
+        }
+    }
+    EL(MaxDist)
+    EL(MinDist)
+
+    rep(q,Q){
+        ll X,Y; cin>>X>>Y; X--, Y--;
+        if(!UF.same(X,Y)){
+            PL("nan")
+        }
+        else if(Infinity[UF.leader(X)]||Infinity[UF.leader(Y)]){
+            PL("inf")
+        }
+        else{
+            PL(MaxDist[Y]-MinDist[X])
+        }
+
+
+
+    }
+
+    return;
+}
+
+int main() {
+   std::cin.tie(nullptr);
+   std::ios_base::sync_with_stdio(false);
+   std::cout << std::fixed << std::setprecision(15);
+   int TT = 1;
+   //cin>>TT;
+   for(int tt = 0; tt<TT; tt++) solve();
+   return 0;
+}
+
+
+/*
+ABC280 6完
+A 数える
+B Ai = Si-Si-1
+C 一つずつ確認．違いなければ最後
+D 二分探索．Kの素因数全部網羅しているか
+E 期待値dp
+F まずUFでグループ分け．各グループ1頂点からの最大，最小コストダイクストラ．Max[y]-Min[x]が答え.2回訪問したらinf.
+*/
