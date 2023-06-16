@@ -1,0 +1,6 @@
+*.out
+*.in
+*.json
+*.txt
+tests
+AHC
