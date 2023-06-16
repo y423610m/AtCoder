@@ -3,5 +3,9 @@
 *.json
 *.txt
 *.exe
+*.css
+*.html
+*.js
+*.js.*
 tests
 AHC
