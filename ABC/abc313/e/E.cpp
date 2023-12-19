@@ -13,6 +13,21 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +85,47 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+vector<pair<char, int>> RLE(const string& s){
+    vector<pair<char, int>> ret;
+    for(int i=0;i<(int)s.size();i++){
+        if(ret.size()==0) ret.push_back({s[i],1});
+        else if(ret.back().first==s[i]) ret.back().second++;
+        else ret.push_back({s[i], 1});
+    }
+    return ret;
+}
 
+template <typename T>
+vector<pair<T, int>> RLE(const vector<T>& vec){
+    vector<pair<T, int>> ret;
+    for(int i=0;i<(int)vec.size();i++){
+        if(ret.size()==0) ret.push_back({vec[i],1});
+        else if(ret.back().first==vec[i]) ret.back().second++;
+        else ret.push_back({vec[i], 1});
+    }
+    return ret;    
+}
 
 #define endl "\n"
 
 void solve() {
 
+   ll N; cin>>N;
+   string S; cin>>S;
+   rep(i,N-1) if(S[i]!='1'&&S[i+1]!='1') END(-1)
    
+   V<ll> A(N);
+   rep(i,N) A[i] = S[i]-'0';
+
+   mint ans = 0;
+   while(A.size()>1){
+      ll a = A.back();
+      A.pop_back();
+      ans++;
+      ans += ans * (a-1);
+   }
+
+   PL(ans)
 
    return;
 }

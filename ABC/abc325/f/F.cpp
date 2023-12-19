@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -74,9 +78,69 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 #define endl "\n"
 
-void solve() {
+void solve(){
+   ll N; cin>>N;
+   V<ll> D(N); cin>>D;
 
-   
+   V<ll> L(2), C(2), K(2);
+   rep(i,2) cin>>L[i]>>C[i]>>K[i];
+
+   V<V<ll>> dp(N+1, V<ll>(K[0]+1, LINF));
+   dp[0][0] = 0;
+
+   rep(i,N){
+      rep(j,K[0]+1){
+         rep(k,K[0]+1) if(j+k<=K[0]){
+            ll l = max(0LL, D[i] - k*L[0] + L[1] - 1) / L[1];
+            chmin(dp[i+1][j+k], dp[i][j]+l);
+         }
+      }
+      EL(dp[i+1])
+   }
+
+   ll ans = LINF;
+   rep(i,K[0]+1){
+      if(dp[N][i]<=K[1]){
+         chmin(ans, C[0]*i + C[1]*dp[N][i]);
+      }
+   }
+
+   if(ans==LINF) PL(-1)
+   else PL(ans)
+
+}
+
+void solve2() {
+
+   ll N; cin>>N;
+   V<ll> D(N); cin>>D;
+
+   V<ll> L(2), C(2), K(2);
+   rep(i,2) cin>>L[i]>>C[i]>>K[i];
+
+   //dp[i][j]:=区間iまでにセンサー1をj個使った場合
+   V<V<Pll>> dp(N+1, V<Pll>(K[0]+1, {LINF, 0}));//コスト，2の個数
+   dp[0][0] = {0, 0};
+   rep(i,N){
+      rep(from, K[0]){
+         auto &[cost, n] = dp[i][from];
+         if(cost==LINF) continue;
+         rep(k, K[0]){
+            if(from+k>K[0]) break;
+            ll k2 = max(0LL, D[i] - k*L[0]) / L[1];
+            if(n + k2 > K[1]) continue;
+            chmin(dp[i+1][from+k], Pll(cost+k*C[0]+k2*C[1], n+k2));
+         }
+      }
+   }
+
+   ll ans = LINF;
+   rep(i,K[0]+1){
+      if(dp[N][i].fi!=LINF) chmin(ans, dp[N][i].fi);
+   }
+
+   if(ans==LINF) PL(-1)
+   else PL(ans)
 
    return;
 }

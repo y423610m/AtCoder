@@ -70,13 +70,89 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+vector<long long> digit0(long long a, int b=2, bool reverse_ = true){
+    vector<long long> ret;
+    while(a){
+        ret.push_back(a%b);
+        a/=b;
+    }
+    if(reverse_) reverse(ret.begin(), ret.end());
+    return ret;
+}
+// vector<ll> dgt10 = digit(100,10) -> {1,0,0}
+// vector<ll> dgt10 = digit(100,10,false) -> {0,0,1}
+// vector<ll> dgt2 = digit(100,2) -> {1,1,0,0,1,0,0}
 
+vector<ll> digit(ll n, ll base=2, bool reverse_ = true){
+   assert(n>=0);
+   vector<ll> ret;
+   if(n==0){
+      ret.push_back(0);
+      return ret;
+   }
+   ll sig = 1;
+   ll d = abs(base);
+   while(n){
+      ret.push_back((n*sig)%d);
+      if(ret.back()<0) ret.back() += d;
+      n -= ret.back() * sig;
+      n /= d;
+      sig *= base / abs(base);
+   }
+   if(reverse_) reverse(ret.begin(), ret.end());
+   return ret;
+}
+/* 負の底ok.abc105 c beat参照
+digit(6, 2) = {1,1,0} = 4+2
+digit(6, 2, false) = {0,1,1} = 2 + 4  
+digit(6, -2) = {1,1,0,1,0} = 16 -8  - 2
+*/
+
+
+template<typename T = long long int >
+T POW(long long a, long long b, long long mod = 0){
+   T ret = 1;
+   T tmp = a;
+   if(mod) tmp%=mod;
+   while(b){
+     if(b&1){
+       ret *= tmp;
+       if(mod) ret%=mod;
+     }
+     b /= 2;
+     if(b) tmp *= tmp;
+     if(mod) tmp%=mod;
+   }
+   return ret;
+}
+// ll result = POW(5,3); ->125
+// POW<boost::mp::int128_t>(a,x,mod);
 
 #define endl "\n"
 
 void solve() {
 
-   
+   END(digit(6, -2))
+
+   srand(0);
+   rep(i,1000){
+      ll n = rand() % 1000000000;
+      ll base = rand() % 10000000;
+      if(rand()%2==0) base = -base;
+      
+      auto ret0 = digit0(n,base);
+      auto ret = digit(n,base);
+      // if(ret0!=ret){
+      //    ES(n) ES(base) ES(ret0) EL(ret)
+      // }
+      {
+         ll a = 0;
+         rep(i,ret.size()) a += POW(base, ret.size()-1-i) * ret[i];
+         if(a!=n){
+            ES(n) ES(base) ES(n) EL(a)
+         }
+      }
+   }
 
    return;
 }

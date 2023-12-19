@@ -1,3 +1,5 @@
+#define _GLIBCXX_DEQUE_BUF_SIZE (1<<15)
+
 #include <bits/stdc++.h>
 using namespace std;
 // #include <atcoder/all>
@@ -10,8 +12,22 @@ using lll = __int128_t;
 using ulll = __uint128_t;
 constexpr ll MOD = 998'244'353;
 // constexpr ll MOD = 1000'000'007;
-// #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
+
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
 
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
@@ -70,15 +86,87 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+#if __has_include(<atcoder/dsu>)
+#include <atcoder/dsu>
+using namespace atcoder;
+//dsu DSU(n);
+//DSU.merge(a,b);
+//if(DSU.same(a,b)){}
+#endif
 
 #define endl "\n"
 
 void solve() {
 
+   ll N; cin>>N;
+   V<Pll> PQ(N-1); cin>>PQ; PQ--;
+
+   dsu uf(N);
+   V<V<ll>> teams(N);
+   V<mint> dp(N);
+   rep(i,N) teams[i].push_back(i);
+   rep(i,N-1){
+      auto [p,q] = PQ[i];
+      p = uf.leader(p);
+      q = uf.leader(q);
+      mint winP = mint(1) * uf.size(p) / (uf.size(p)+uf.size(q));
+      mint winQ = mint(1) * uf.size(q) / (uf.size(p)+uf.size(q));
+      for(auto member:teams[p]) dp[member] += winP; 
+      for(auto member:teams[q]) dp[member] += winQ;
+      uf.merge(p,q);
+      ll from = p;
+      ll to = q;
+      if(uf.leader(p)==p) swap(from, to);
+      for(auto mem:teams[from]) teams[to].push_back(mem);
+   }
+
    
 
+   PL(dp)
+
    return;
+}
+
+void solve2(){
+   ll N; cin>>N;
+   V<Pll> PQ(N-1); cin>>PQ; PQ--;
+   
+   dsu uf(N);
+   V<V<pair<ll, mint>>> G(N+N-1);
+   ll cnt = N;
+   // unordered_map<ll,ll> mp;
+   // mp.reserve(N*5);
+   V<ll> mp(N*2);
+   rep(i,N) mp[i] = i;
+   rep(i,N-1){
+      auto [p,q] = PQ[i];
+      p = uf.leader(p);
+      q = uf.leader(q);
+
+      mint winP = mint(uf.size(p))/(uf.size(p)+uf.size(q));
+      mint winQ = mint(uf.size(q))/(uf.size(p)+uf.size(q));
+      G[cnt].push_back({mp[p], winP});
+      G[cnt].push_back({mp[q], winQ});
+      uf.merge(p,q);
+
+      mp[uf.leader(p)] = cnt;
+      cnt++;
+   }
+
+   V<mint> ans(N*2);
+   queue<pair<ll,mint>> que;
+   que.push({cnt-1,0});
+   while(!que.empty()){
+      auto [p, d] = que.front(); que.pop();
+      for(const auto& [to, cost]:G[p]){
+         ans[to] = d+cost;
+         que.push({to, d+cost});
+      }
+   }
+
+   rep(i,N) PS(ans[i])
+   PL("")
+   
 }
 
 int main() {
@@ -89,6 +177,7 @@ int main() {
    // stoll(s,nullptr,base);
    int TT = 1;
    //cin>>TT;
-   for(int tt = 0; tt<TT; tt++) solve();
+   for(int tt = 0; tt<TT; tt++) solve2();
    return 0;
 }
+

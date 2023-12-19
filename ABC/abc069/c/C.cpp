@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -54,6 +58,12 @@ template<typename T, typename U> void operator--(pair<T, U>& p, int){p.first--, 
 template<typename T, typename U> void operator++(pair<T, U>& p){p.first++, p.second++;}//pre
 template<typename T, typename U> void operator++(pair<T, U>& p, int){p.first++, p.second++;}//post
 template<class T,class U> struct std::hash<std::pair<T,U>>{size_t operator()(const std::pair<T,U> &p) const noexcept {return (std::hash<T>()(p.first)+1) ^ (std::hash<U>()(p.second)>>2);}};
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type print_tuple(std::ostream&, const std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type print_tuple(std::ostream& os, const std::tuple<T...>& tup){if (n != 0){os << " ";} os << std::get<n>(tup); print_tuple<n+1>(os, tup);}
+template <typename... T> std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {print_tuple<0>(os, tup); return os;}
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>& tup){is>> std::get<n>(tup); input_tuple<n+1>(is, tup);}
+template <typename... T> std::istream& operator>>(std::istream& is, std::tuple<T...>& tup) {input_tuple<0>(is, tup); return is;}
 template<typename T, unsigned long int sz> ostream &operator<<(ostream &os, const array< T , sz > &v) {for(int i = 0; i < sz; i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
 template<typename T, unsigned long int sz> istream &operator>>(istream &is, array< T , sz > &v) {for(T& in:v){cin>>in;} return is;}
 template<typename T, unsigned long int sz> void operator--(array< T , sz > &A){for(auto& a:A){a--;}}//pre
@@ -76,7 +86,42 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   V<ll> A(N); cin>>A;
+
+   V<ll> cnt(3);
+   rep(i,N){
+      if(A[i]%4==0) cnt[2]++;
+      else if(A[i]%2==0) cnt[1]++;
+      else cnt[0]++;
+   }
+
+   rep(s,3){
+      V<ll> c = cnt;
+      V<ll> ans;
+      if(c[s]==0) continue;
+      ll last = s;
+      ans.push_back(s);
+      c[s]--;
+      bool ok = true;
+      rep(i,N-1){
+         bool found = false;
+         rep(j,3) if(c[j]>0 && last+j>=2){
+            last = j;
+            c[j]--;
+            ans.push_back(j);
+            found = true;
+            break;
+         }
+         if(!found){
+            ok = false;
+            break;
+         }
+      }
+      ES(s) ES(ok) EL(ans)
+      if(ok) END(Yes)
+   }
+   PL(No)
 
    return;
 }

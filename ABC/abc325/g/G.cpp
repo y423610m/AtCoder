@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -74,9 +78,111 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 #define endl "\n"
 
-void solve() {
+void solve(){
+   try{
+      string S; cin>>S;
+      ll N = S.size();
+      ll K; cin>>K;
 
-   
+      //dp[i][j]:=[i,j)を何文字にできるか
+      V<V<ll>> dp(N+1, V<ll>(N+1, LINF));
+      rep(l,N+1){
+         rep(r,N+1){
+            dp[l][r] = max(r-l, 0LL);
+         }
+      }
+
+      repi(d,1,N+1){
+         // rep(l,N){
+         for(ll l=N-1;l>=0;l--){
+            ll r = l+d;
+            if(r>N) continue;
+            for(ll m=l;m<=r;m++) chmin(dp[l][r], dp[l][m]+dp[m][r]);
+            if(S[l]!='o') continue;
+            if(S[r-1]!='f') continue;
+            if(dp[l+1][r-1]==0){
+               chmin(dp[l][r], 0);
+               for(ll dr=1;r+dr<=N;dr++){
+                  ll k = dr;
+                  chmin(k, K);
+                  chmin(dp[l][r+dr], max(0LL, dp[r][r+dr]-k));
+               }
+               // for(ll dr=1;dr<=K && r+dr<=N ;dr++) chmin(dp[l][r+dr], 0);
+            }
+         }
+      }
+
+      // for(ll l=N-1;l>=0;l--){
+      //    for(ll r=l+2;r<=N;r++){
+      //       for(ll m=l+1;m<r;m++) chmin(dp[l][r], dp[l][m]+dp[m][r]);
+      //       for(ll m=l+1;m<r;m++){
+      //          if(S[l]!='o') continue;
+      //          if(S[m]!='f') continue;
+
+      //       }
+      //       if(S[l]!='o') continue;
+      //       if(S[r-1]!='f') continue;
+      //       if(dp[l+1][r-1]==0){
+      //          chmin(dp[l][r], 0);
+      //          for(ll dr=1;dr<=K && r+dr<=N;dr++) chmin(dp[l][r+dr], 0);
+      //       }
+      //    }
+      // }
+
+      rep(l,N+1){
+         ES(l) EL(dp[l])
+      }
+
+      PL(dp[0][N])
+   }
+   catch(const exception& e){
+      throw exception();
+   }
+
+}
+
+void solve2() {
+
+   string S; cin>>S;
+   ll N  = S.size();
+   ll K; cin>>K;K+=2;
+
+   map<ll, Pll> mp;//isOf, len
+   rep(i,S.size()){
+      if(i+1<N && S.substr(i,2)=="of"){
+         mp[i] = {true, 2};
+         i++;
+         continue;
+      }
+      else{
+         if(mp.empty()) mp[0] = {false, 1};
+         else {
+            // back()  -> Pll -> len
+            prev(mp.end())->se.se++;
+         }
+      }
+   }
+   // if(mp.)
+
+   ll id = N;
+   ll r = 0;
+   while(!mp.empty()){
+      auto it = prev(mp.end());
+      chmin(id, it->fi);
+
+      auto [isOf, len] = (it->se);
+      if(!isOf){
+         r += len;
+         mp.erase(id);
+      }
+      else{
+         if(K > len) r -=  max(r, K-len);
+         else r += len-K;
+         mp.erase(id);
+      }
+   }
+
+   PL(r)
 
    return;
 }

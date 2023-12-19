@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -74,9 +78,76 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 #define endl "\n"
 
-void solve() {
+void solve(){
 
+   ll N,X,Y; cin>>N>>X>>Y;
+   N--;
+   V<ll> P(N), T(N);
+   rep(i,N) cin>>P[i]>>T[i];
+
+   ll cnt = 1;
    
+   for(ll i=1;i<=8;i++) cnt = lcm(cnt, i);
+   // cnt = 8*7*6*5*4*3*2*1
+   EL(cnt)
+
+   V<ll> dp(cnt, LINF);
+   rep(i,cnt){
+      ll t = X+i;
+
+      rep(j,N){
+         // wait
+         // t += t - t % P[j];
+         t += ((P[j]-t)%P[j] + P[j]) % P[j];
+         // take
+         t += T[j];
+      }
+
+      chmin(dp[i], t+Y-i);
+   }
+
+   rep(i,20) EL(dp[i])
+
+
+   ll Q; cin>>Q;
+   rep(_,Q){
+      ll q; cin>>q;
+      ll ans = q + dp[q%cnt];
+      PL(ans)
+   }
+}
+
+void solve2() {
+
+   ll N,X,Y; cin>>N>>X>>Y;
+   N--;
+   V<ll> P(N), T(N);
+   rep(i,N) cin>>P[i]>>T[i];
+
+   V<V<ll>> time(10, V<ll>(10,LINF));// iで割ったあまりがjの時の最短時間
+   for(ll i=1;i<=8;i++){
+      for(ll j=0;j<i;j++){
+         rep(k,N)if(P[k]==i){
+            ES(i) ES(j) ES(k) 
+            ll cand = X + j;
+            ll tmp = cand % P[k];
+            cand += (P[k] - tmp) % P[k];
+            cand += T[k] + Y;
+            EL(cand)
+            chmin(time[i][j], cand);
+         }
+      }
+   }
+
+   ll Q; cin>>Q;
+   rep(_,Q){
+      ll q; cin>>q;
+      ll ans = LINF;
+      for(ll i=1;i<=8;i++){
+         chmin(ans, q+time[i][q%i]);
+      }
+      PL(ans)
+   }
 
    return;
 }
@@ -92,3 +163,13 @@ int main() {
    for(int tt = 0; tt<TT; tt++) solve();
    return 0;
 }
+
+/*
+ABC319 5完 4WA 1TLE
+A コピペ
+B 愚直
+C dfs.斜め忘れて20分かけた
+D 二分探索．L>Wを考慮せず30分＋4WA
+E 1~8のlcmの通りしかないので，予め計算しておく．最初8!通りで1TLE
+
+*/

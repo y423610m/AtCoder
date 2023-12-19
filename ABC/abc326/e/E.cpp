@@ -13,6 +13,21 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +85,69 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#if __has_include(<atcoder/segtree>)
+#include <atcoder/segtree>
+using namespace atcoder;
+template<typename T> T opMax(T a, T b){return max(a,b);}
+template<typename T> T opMin(T a, T b){return min(a,b);}
+template<typename T> T opSum(T a, T b){return a+b;}
+template<typename T> T e0(){return T(0);}
+template<typename T> T e_LINF(){return -LINF;}
+template<typename T> T eLINF(){return LINF;}
 
+template<typename T=ll> using RMQ = segtree<T, opMax<T>, e_LINF<T>>;//Range Max Query
+template<typename T=ll> using RmQ = segtree<T, opMin<T>, eLINF<T>>;// RmQ tree(vec); tree.prod(l,r)
+template<typename T=ll> using RSQ = segtree<T, opSum<T>, e0<T>>;
+
+ll seg_target;
+bool f(ll vi){return vi<seg_target;}//seg.max_right<f>(x-1)
+bool f2(ll vi){return vi>=seg_target;}//seg.max_right<f>(x-1)
+//max_right<f>(l):=>[l:N)でfを満たす右端．
+//min_left<f>(r):=>[0:r)でfを満たす左端．
+//f(e)=trueでなければならない
+//RMQ<ll> tree(N);
+//tree.set(i,0);
+//tree.get(i);
+//tree.prod(l,r);//半開区間
+#endif
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   V<ll> A(N); cin>>A;
+
+   // sort(ALL(A));
+
+   using M = mint;
+
+   RSQ<M> seg(N);
+
+   M ans = 0;
+   V<M> dp(N);
+   for(ll i=N-1;i>=0;i--){
+      dp[i] = A[i];
+
+      // auto it = upper_bound(ALL(A), A[i]);
+      // if(it!=A.end()){
+      //    ll nxt = it - A.begin();
+      //    ES(i) ES(A[i]) ES(seg.prod(nxt, N)) ES(nxt) EL(N-nxt)
+      //    mint d = seg.prod(nxt, N) * (N-nxt) / N;
+      //    dp[i] += d;
+      // }
+      M d = seg.prod(i+1, N)  / N;
+      dp[i] += d;
+      ES(i) ES(seg.prod(i+1, N)) ES((N-(i+1))) ES(d) EL(dp[i])
+
+
+      ans += dp[i];
+      seg.set(i, dp[i]);
+   }
+   EL(dp)
+   ans /= N;
+
+   PL(ans)
 
    return;
 }

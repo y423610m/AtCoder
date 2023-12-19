@@ -1,3 +1,5 @@
+#pragma comment(linker, "/stack:1000000000")
+
 #include <bits/stdc++.h>
 using namespace std;
 // #include <atcoder/all>
@@ -8,10 +10,24 @@ using ld = long double;
 using ull = unsigned long long;
 using lll = __int128_t;
 using ulll = __uint128_t;
-constexpr ll MOD = 998'244'353;
-// constexpr ll MOD = 1000'000'007;
+// constexpr ll MOD = 998'244'353;
+constexpr ll MOD = 1000'000'007;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
-// #pragma comment(linker, "/stack:1000000000")
+
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
 
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
@@ -70,13 +86,94 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include "graph/tree/rerooting_dp.hpp"
+/*
+   ll N; cin>>N;
+   Edges<ll> E = readE<ll>(N-1, -1, false);//weighted?
+   Graph<ll> G(N, E, false);//directed?
+   
+   using EdgeT = ll;
+   using VertexT = ll;
+   auto Merge = [&](EdgeT a, EdgeT b)->EdgeT {
+      return max(a,b);
+   };
+   auto El = [&](int p, bool canAffectSelf = false)->EdgeT {
+      if(canAffectSelf) return 0;
+      return 0;
+   };
+   auto PE = [&](VertexT v, const Edge<ll>& e)->EdgeT {
+      return v + e.cost;
+   };
+   auto PV = [&](EdgeT e, int p)->VertexT {
+      return e;
+   };
+   
+   RerootingDP<EdgeT, VertexT> rdp;
+   rdp.build(N, G, 0, Merge, El, PE, PV);
+   auto dp = rdp.reroot(G, Merge, El, PE, PV);
 
+vertex:その頂点を根とした値を考えるとき
+edge:根以外の木の一部にするとき．
+typ90003, abc222f, edpc_v
+abc220f:pair載せる
+*/
 
 #define endl "\n"
 
 void solve() {
 
+   ll N; cin>>N;
+   Edges<ll> E = readE<ll>(N-1, -1, true);//weighted?
+   Graph<ll> G(N, E, false);//directed?
+
+   constexpr int M = 60;
+
+   V<V<int>> e(2, V<int>(M));
+   rep(i,M) e[0][i] = 1;
    
+   using EdgeT = V<V<int>>;
+   using VertexT = EdgeT;
+   auto Merge = [&](EdgeT a, const EdgeT& b)->EdgeT {
+      rep(i,2){
+         rep(j,M){
+            a[i][j] += b[i][j];
+         }
+      }
+      return a;
+   };
+   auto El = [&](int p, bool canAffectSelf = false)->EdgeT {
+      if(canAffectSelf) return vector<vector<int>>(2, V<int>(M));
+      return e;
+   };
+   auto PE = [&](VertexT v, const Edge<ll>& e)->EdgeT {
+      rep(i,M){
+         if(e.cost&(1LL<<i)){
+            swap(v[0][i], v[1][i]);
+         } 
+      }
+      return v;
+   };
+   auto PV = [&](const EdgeT& e, int p)->VertexT {
+      return e;
+   };
+   
+   RerootingDP<EdgeT, VertexT> rdp;
+   rdp.build(N, G, 0, Merge, El, PE, PV);
+   auto dp = rdp.reroot(G, Merge, El, PE, PV);
+   // rep(i,N){
+   //    rep(j,2){
+   //       ES(i) ES(j) EL(dp[i][j])
+   //    }
+   // }
+
+   mint ans = 0;
+   rep(i,N){
+      rep(j,M){
+         ans += mint(1LL<<j) * dp[i][1][j];
+      }
+   }
+   ans /=2;
+   PL(ans)
 
    return;
 }

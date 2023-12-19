@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,84 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+template<typename T, typename F>
+T binSearch(T ok, T ng, F check){
+   while(abs(ok-ng)>1){
+       T mid = (ok+ng)/2;
+       if(check(mid)) ok=mid;
+       else ng=mid;
+   }
+   return ok;
+}
+
 
 
 #define endl "\n"
 
+void solve2() {
+
+   ll N,M; cin>>N>>M;
+   V<ll> L(N); cin>>L;
+
+
+
+   auto check = [&](auto W){
+      if(W==0) return false;
+      ll line = 1;
+      ll w = 0;
+      rep(i,N){
+         if(w+L[i]>W){
+            line++;
+            w = 0;
+         }
+         w += L[i]+1;
+      }
+      ES(W) EL(line)
+      if(line>M) return true;
+      return false;
+   };
+
+   EL(check(26))
+
+
+   auto ans = binSearch(0LL, LINF, check);
+
+   // for(ll w=ans)
+   PL(ans+1)
+
+   return;
+}
+
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   V<ll> L(N); cin>>L;
+
+
+
+   auto check = [&](auto W){
+      ll line = 1;
+      ll w = 0;
+      rep(i,N){
+         if(L[i]>W) return false;
+         if(w+L[i]>W){
+            line++;
+            w = 0;
+         }
+         w += L[i]+1;
+      }
+      ES(W) EL(line)
+      if(line<=M) return true;
+      return false;
+   };
+
+   EL(check(26))
+
+
+   auto ans = binSearch(LINF, 0LL, check);
+
+   // for(ll w=ans)
+   PL(ans)
 
    return;
 }

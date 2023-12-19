@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -71,12 +75,61 @@ template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
 
-
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,K; cin>>N>>K;
+
+   V<V<ll>> dp(4, V<ll>(N*3+2));
+   dp[0][0] = 1;
+
+   rep(i,3){
+      rep(j,N*2+1){
+         // repi(k,1,N*3+1) if(j+k<=N*3){
+         //    dp[i+1][j+k] += dp[i][j];
+         // }
+         dp[i+1][j+1] += dp[i][j];
+         dp[i+1][j+1+N] -= dp[i][j];
+      }
+      rep(j,N*3) dp[i+1][j+1] += dp[i+1][j];
+      // EL(dp[i+1])
+   }
+   // EL(dp[3])
+
+   rep(i,N*3+1){
+      // ES(i) EL(K)
+      if(K>dp[3][i]){
+         K -= dp[3][i];
+         continue;
+      }
+
+      //answer
+      ll x = i;
+      EL(x)
+      for(ll j=1;j<=N;j++){
+         if(j+N*2<x) continue;
+         if(x<j+2) continue;
+         ll my = x - j - N;
+         ll My = x - j - 1;
+         chmax(my, 1);
+         chmin(My, N);
+         if(My < my) continue;
+         if(My-my+1<K){
+            K -= My-my+1;
+         }
+         else{
+            // K;
+            // PS(j) PS(x-K-1-j) PL(K+1)
+            ll y = my + K - 1;
+            PS(j) PS(y) PL(x-j-y)
+            END("")
+         }
+      }
+      END(0)
+   }
+
+   EL("a")
 
    return;
 }

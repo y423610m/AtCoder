@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -54,6 +58,12 @@ template<typename T, typename U> void operator--(pair<T, U>& p, int){p.first--, 
 template<typename T, typename U> void operator++(pair<T, U>& p){p.first++, p.second++;}//pre
 template<typename T, typename U> void operator++(pair<T, U>& p, int){p.first++, p.second++;}//post
 template<class T,class U> struct std::hash<std::pair<T,U>>{size_t operator()(const std::pair<T,U> &p) const noexcept {return (std::hash<T>()(p.first)+1) ^ (std::hash<U>()(p.second)>>2);}};
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type print_tuple(std::ostream&, const std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type print_tuple(std::ostream& os, const std::tuple<T...>& tup){if (n != 0){os << " ";} os << std::get<n>(tup); print_tuple<n+1>(os, tup);}
+template <typename... T> std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {print_tuple<0>(os, tup); return os;}
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>& tup){is>> std::get<n>(tup); input_tuple<n+1>(is, tup);}
+template <typename... T> std::istream& operator>>(std::istream& is, std::tuple<T...>& tup) {input_tuple<0>(is, tup); return is;}
 template<typename T, unsigned long int sz> ostream &operator<<(ostream &os, const array< T , sz > &v) {for(int i = 0; i < sz; i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
 template<typename T, unsigned long int sz> istream &operator>>(istream &is, array< T , sz > &v) {for(T& in:v){cin>>in;} return is;}
 template<typename T, unsigned long int sz> void operator--(array< T , sz > &A){for(auto& a:A){a--;}}//pre
@@ -70,13 +80,53 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include "graph/graph_template.hpp"
+/*
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, true);//weighted?
+   Graph<int> G(N, E, false, false);//directed? reverse?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+*/
 
+// #include "structure/union_find/undo_union_find.hpp"
+
+#if __has_include(<atcoder/dsu>)
+#include <atcoder/dsu>
+using namespace atcoder;
+//dsu DSU(n);
+//DSU.merge(a,b);
+//if(DSU.same(a,b)){}
+#endif
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,M,K; cin>>N>>M>>K;
+   Edges<ll> E = readE<ll>(M, -1, true);//weighted?
+   Graph<ll> G(N, E, false, false);//directed? reverse?
+
+   ll w = 0;
+   ll ans = LINF;
+   ll cnt = 0;
+
+   V<ll> mask(M);
+   rep(i,N-1) mask[i] = 1;
+   sort(ALL(mask));
+
+   do{
+      dsu uf(N);
+      ll w = 0;
+      // bool ok = 
+      rep(i,M) if(mask[i]){
+         const auto& e = E[i];
+         uf.merge(e.from, e.to);
+         w += e.cost;
+      }
+      if(uf.size(0)==N) chmin(ans, w%K);
+   }while(next_permutation(ALL(mask)));
+
+   PL(ans)
 
    return;
 }

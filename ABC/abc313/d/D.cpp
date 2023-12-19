@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -72,11 +76,56 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 
 
-#define endl "\n"
+// #define endl "\n"
 
 void solve() {
+   ll N,K; cin>>N>>K;
+   const ll M = 1000;
+   V<bitset<M+1>> A(N);
 
+   bool flag = gcd(N,K) != 1;
+   ll cnt = 0;
+   for(int i=0;i*(K+1)<N;i++){
+      // rep(j,K+1){
+      for(int j=K;j>=0;j--){
+         PS("?")
+         rep(k,K+1) if(j!=k){
+            ll id = (i*(K+1)+k)%N;
+            A[cnt].set(id);
+            PS(id+1)
+         }
+         PL("")
+         ll T; cin>>T;
+         A[cnt][M] = T;
+         cnt++;
+         if(cnt==N){
+            i=N*2;
+            j = N*2;
+            break;
+         }
+      }
+   }
+
+   V<ll> ans(N, -1);
+
+   rep(i,N){
+      sort(A.begin()+i, A.end(), [&](auto& a, auto& b){
+         return int(a[i]) > int(b[i]);
+      });
+      if(!A[i][i]){
+         continue;
+      }
+      rep(j,N) if(i!=j){
+         if(A[j][i]) A[j] ^= A[i];
+      }
+      EL(i)
+      rep(j,N) EL(A[j])
+   }
+   EL(N)
+   rep(i,N) EL(A[i])
    
+   rep(i,N) ans[i] = A[i][M];
+   PS("!") PL(ans)
 
    return;
 }

@@ -8,10 +8,25 @@ using ld = long double;
 using ull = unsigned long long;
 using lll = __int128_t;
 using ulll = __uint128_t;
-constexpr ll MOD = 998'244'353;
-// constexpr ll MOD = 1000'000'007;
+// constexpr ll MOD = 998'244'353;
+constexpr ll MOD = 1000'000'007;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
+
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
 
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
@@ -70,13 +85,51 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include "graph/tree/rooted_tree.hpp"
+/*
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, false);//weighted?
+   Graph<int> G(N, E, false);//directed?
+   //Graph<int> G(N); G.read(M, -1, true, true);
 
+   RootedTree rt(N, G, 0);
+
+   EL(rt.depth)
+   EL(rt.parent)
+   EL(rt.numOfDescendants)
+   rep(i,N) EL(rt.children[i])
+   EL(rt.farestDescendant)
+   parent[root]=root
+   //Edgeは親->子が含まれていれば,有向でも無向でもOK
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, true);//weighted?
+   Graph<int> G(N, E, false);//directed?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+
+   RootedTree rt(N, G, 0);
+
+   mint ans = 0;
+   auto dfs = [&](auto dfs, int p, int par)->void {
+      for(const auto& e:G[p]){
+         if(e.to==par){
+            ll n = (rt.numOfDescendants[p]+1);
+            ans += mint(1) * e.cost * n * (N-n);
+         }
+         else{
+            dfs(dfs, e.to, p);
+         }
+      }
+   };
+
+   dfs(dfs, 0, -1);
+
+   PL(ans)
 
    return;
 }

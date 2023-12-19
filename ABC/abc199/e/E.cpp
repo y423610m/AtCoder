@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,106 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+// template< typename T >
+// struct Combination {
+//   vector< T > _fact, _rfact, _inv;
 
+//   Combination(int sz) : _fact(sz + 1), _rfact(sz + 1), _inv(sz + 1) {
+//     _fact[0] = _rfact[sz] = _inv[0] = 1;
+//     for(int i = 1; i <= sz; i++) _fact[i] = _fact[i - 1] * i;
+//     _rfact[sz] /= _fact[sz];
+//     for(int i = sz - 1; i >= 0; i--) _rfact[i] = _rfact[i + 1] * (i + 1);
+//     for(int i = 1; i <= sz; i++) _inv[i] = _rfact[i] * _fact[i - 1];
+//   }
+
+//   inline T fact(int k) const { return _fact[k]; }
+
+//   inline T rfact(int k) const { return _rfact[k]; }
+
+//   inline T inv(int k) const { return _inv[k]; }
+
+//   T P(int n, int r) const {
+//     if(r < 0 || n < r) return 0;
+//     return fact(n) * rfact(n - r);
+//   }
+
+//   T C(int p, int q) const {
+//     if(q < 0 || p < q) return 0;
+//     return fact(p) * rfact(q) * rfact(p - q);
+//   }
+
+//   T H(int n, int r) const {
+//     if(n < 0 || r < 0) return (0);
+//     return r == 0 ? 1 : C(n + r - 1, r);
+//   }
+// };
+//Combination<mint> Comb(MaxSize);
+//auto a = Comb.C(p,q);
+//auto b = Comb.P(n,r);
+//auto c = Comb.H(n,r);
+
+template<typename T = long long int >
+T POW(long long a, long long b, long long mod = 0){
+   T ret = 1;
+   T tmp = a;
+   if(mod) tmp%=mod;
+   while(b){
+     if(b&1){
+       ret *= tmp;
+       if(mod) ret%=mod;
+     }
+     b /= 2;
+     if(b) tmp *= tmp;
+     if(mod) tmp%=mod;
+   }
+   return ret;
+}
+// ll result = POW(5,3); ->125
+// POW<boost::mp::int128_t>(a,x,mod);
 
 #define endl "\n"
 
 void solve() {
 
-   
+   V<ll> f(21);
+   f[0] = 1;
+   f[1] = 1;
+   for(ll i=2;i<=20;i++) f[i] = f[i-1] * i;
+   EL(f)
+
+   auto C = [&](int p, int q)-> ll {
+      if(q < 0 || p < q) return 0;
+
+      return f[p] / f[q] / f[p-q];
+   };
+
+   // Combination<ll> C(21);
+
+   ll N,M; cin>>N>>M;
+   rep(_,M){
+      ll X,Y,Z; cin>>X>>Y>>Z;
+      // if(Y>X){
+      //    PL(0)
+      //    continue;
+      // }
+      ll ans = 0;
+      for(ll z = 0; z <= Z; z++){
+         ll cand = 0;
+         // Y以下からZ-z個，
+         cand = C(Y, Z-z) * C(X, Z-z) * C(N-X, Y-(Z-z)) * f[N-X];
+         if(z%2==1) cand = -cand;
+         ans += cand;
+         ES(C(Y, Z-z))
+         ES(C(X, Z-z))
+         ES(C(N-X, Y-(Z-z)))
+         ES(f[N-X])
+         ES(Z-z)
+
+         EL(cand)
+      }
+
+      PL(ans)
+   }
 
    return;
 }

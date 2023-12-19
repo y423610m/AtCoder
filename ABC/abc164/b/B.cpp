@@ -13,12 +13,22 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
 constexpr ll LINF = (1LL<<62)-1;
 string Yes = "Yes";
 string No = "No";
+
+// template<typename T>concept IsString = requires same_as<T,string>||same_as<T,const char[]>;
+template<typename T>concept IsVector = requires(T x){x[0];};
+template<typename T>concept IsNdVector = requires(T x){x[0][0];};
+template<typename T>concept IsNotVector = !(IsVector<T>);
+template<typename T>concept Is1dVector = (IsVector<T>&&!IsNdVector<T>);
 
 #define rep(i, n) for (ll i = 0; i < (ll)(n); i++)
 #define repi(i, a, n) for (ll i = a; i < (ll)(n); i++)
@@ -31,8 +41,8 @@ string No = "No";
    #define EL(a) while(0){}
 #else
    #define NAME(a) #a
-   #define ES(a) cerr<<NAME(a)<<": "<<(a)<<" ";
-   #define EL(a) cerr<<NAME(a)<<": "<<(a)<<endl;
+   #define ES(a) cerr<<NAME(a)<<": "<<(IsNdVector<decltype(a)>?"\n":"")<<(a)<<" ";
+   #define EL(a) cerr<<NAME(a)<<": "<<(IsNdVector<decltype(a)>?"\n":"")<<(a)<<endl;
 #endif
 #define END(a) {PL(a) return;}
 #define RES(a) cerr<<"\r"<<NAME(a)<<": "<<(a)<<"   ";
@@ -54,18 +64,15 @@ template<typename T, typename U> void operator--(pair<T, U>& p, int){p.first--, 
 template<typename T, typename U> void operator++(pair<T, U>& p){p.first++, p.second++;}//pre
 template<typename T, typename U> void operator++(pair<T, U>& p, int){p.first++, p.second++;}//post
 template<class T,class U> struct std::hash<std::pair<T,U>>{size_t operator()(const std::pair<T,U> &p) const noexcept {return (std::hash<T>()(p.first)+1) ^ (std::hash<U>()(p.second)>>2);}};
-template<typename T, unsigned long int sz> ostream &operator<<(ostream &os, const array< T , sz > &v) {for(int i = 0; i < sz; i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
-template<typename T, unsigned long int sz> istream &operator>>(istream &is, array< T , sz > &v) {for(T& in:v){cin>>in;} return is;}
-template<typename T, unsigned long int sz> void operator--(array< T , sz > &A){for(auto& a:A){a--;}}//pre
-template<typename T, unsigned long int sz> void operator--(array< T , sz > &A, int){for(auto& a:A){a--;}}//post
-template<typename T, unsigned long int sz> void operator++(array< T , sz > &A){for(auto& a:A){a++;}}//pre
-template<typename T, unsigned long int sz> void operator++(array< T , sz > &A, int){for(auto& a:A){a++;}}//post
-template<typename T> ostream &operator<<(ostream &os, const vector< T > &v) {for(int i = 0; i < (int) v.size(); i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
-template<typename T> istream &operator>>(istream &is, vector< T > &v) {for(T &in : v) is >> in;return is;}
-template<typename T> void operator--(vector<T>& A){for(auto& a:A) a--;}//pre
-template<typename T> void operator--(vector<T>& A, int){for(auto& a:A) a--;}//post
-template<typename T> void operator++(vector<T>& A){for(auto& a:A) a++;}//pre
-template<typename T> void operator++(vector<T>& A, int){for(auto& a:A) a++;}//post
+template<IsNotVector T, unsigned long int sz> ostream &operator<<(ostream &os, const array< T , sz > &v) {for(int i = 0; i < sz; i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
+template<IsVector T, unsigned long int sz> ostream &operator<<(ostream &os, const array< T , sz > &v) {for(int i = 0; i < sz; i++) {os << v[i] << (i + 1 != (int) v.size() ? "\n" : "");}return os;}
+template<IsNotVector T> ostream &operator<<(ostream &os, const vector< T > &v) {for(int i = 0; i < (int) v.size(); i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
+template<IsVector T> ostream &operator<<(ostream &os, const vector< T > &v) {for(int i = 0; i < (int) v.size(); i++) {os << v[i] << (i + 1 != (int) v.size() ? "\n" : "");}return os;}
+template<IsVector T> requires (!is_same_v<T,string>) istream &operator>>(istream &is, T &v) {for(auto &a : v) is >> a;return is;}
+template<IsVector T> void operator++(T& v){for(auto& a:v)++a;}//pre
+template<IsVector T> void operator++(T& v, int){for(auto& a:v)a++;}//post
+template<IsVector T> void operator--(T& v){for(auto& a:v)--a;}//pre
+template<IsVector T> void operator--(T& v, int){for(auto& a:v)a--;}//post
 template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;}
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
@@ -76,7 +83,14 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll A,B,C,D;
+   cin>>A>>B>>C>>D;
+   while(1){
+      C-=B;
+      if(C<=0) END(Yes)
+      A-=D;
+      if(A<=0) END(No)
+   }
 
    return;
 }

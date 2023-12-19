@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,47 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   V<ll> X(N); cin>>X;
+   V<ll> L(N); cin>>L;
+
+   auto check = [&](ll k)-> bool {
+      V<ll> Y = X;
+      rep(i,N) Y[i] = abs(Y[i] - k);
+      sort(ALL(Y));
+      rep(i,N) if(L[i]<Y[i]) return false;
+      return true;
+   };
+   for(ll k=-20;k<=15;k++){
+      ES(k) EL(check(k))
+   }
+
+   V<ll> Start;
+   V<ll> End;
+   rep(i,N){//L
+      rep(j,N){//X
+         if(!check(X[j]-L[i]-1)&&check(X[j]-L[i])) Start.push_back({X[j]-L[i]});
+         if(check(X[j]+L[i])&&!check(X[j]+L[i]+1)) End.push_back(  {X[j]+L[i]+1});
+      }
+   }
+   sort(ALL(Start));
+   sort(ALL(End));
+   EL(Start)
+   EL(End)
+
+   ll ans = 0;
+   ll last = -LINF;
+   rep(i,N){
+      auto itl = lower_bound(ALL(Start), last);
+      if(itl==Start.end()) break;
+      auto itr = lower_bound(ALL(End), *itl+1);
+      // if(itr==End.end()) break;
+      // if(itl==)
+      ans += *itr - *itl;
+      last = (*itr) + 1;
+   }
+
+   PL(ans)
 
    return;
 }

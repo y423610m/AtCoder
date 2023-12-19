@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -71,12 +75,59 @@ template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
 
-
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,K,P; cin>>N>>K>>P;
+
+   ll M = 5;//パラメータ数
+   //5次元dp
+   vector dp(P+1, vector(P+1, vector(P+1, vector(P+1, vector<ll>(P+1, LINF)))));
+   auto nxt = dp;
+   dp[0][0][0][0][0] = 0;
+
+   rep(_,N){
+      ll C; cin>>C;
+      V<ll> A(K); cin>>A;
+      while(A.size()<M) A.push_back(0);
+      EL(A)
+      nxt = dp;
+
+      rep(i,P+1) 
+      rep(j,P+1) 
+      rep(k,P+1) 
+      rep(l,P+1) 
+      rep(m,P+1){
+      chmin(nxt[min(i+A[0], P)][min(j+A[1],P)][min(k+A[2],P)][min(l+A[3],P)][min(m+A[4],P)], dp[i][j][k][l][m]+C);
+      // if(dp[min(i+A[0], P)][min(j+A[1],P)][min(k+A[2],P)][min(l+A[3],P)][min(m+A[4],P)]!=LINF){
+      //    ES(i) ES(j) ES(k) ES(l) ES(m) EL(dp[min(i+A[0], P)][min(j+A[1],P)][min(k+A[2],P)][min(l+A[3],P)][min(m+A[4],P)])
+      // }
+      }
+
+      swap(dp, nxt);
+   }
+
+   ll ans = LINF;
+   rep(i,P+1) 
+   rep(j,P+1) 
+   rep(k,P+1) 
+   rep(l,P+1) 
+   rep(m,P+1) 
+   {
+      ll cnt = 0;
+      if(dp[i][j][k][l][m]==LINF) continue;
+      if(i==P) cnt++;
+      if(j==P) cnt++;
+      if(k==P) cnt++;
+      if(l==P) cnt++;
+      if(m==P) cnt++;
+      EL(cnt)
+      if(cnt>=K) chmin(ans, dp[i][j][k][l][m]);
+   }
+
+   if(ans==LINF) PL(-1)
+   else PL(ans)
 
    return;
 }

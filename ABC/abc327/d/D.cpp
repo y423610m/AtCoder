@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,36 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+#include "structure/union_find/weighted_union_find.hpp"
+/*
+WeightedUnionFind<ll> tree(N);
+if(!tree.same(x,y)) tree.merge(x,y,w);// weight[y] = weight[x]+w;
+tree.leader();
+tree.diff(x,y);//weight(y)-weight(x);
+abc280 F
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   V<ll> A(M), B(M);
+   cin>>A>>B;
+   A--, B--;
+
+   WeightedUnionFind<ll> uf(N);
+
+
+   rep(i,M){
+      if(uf.same(A[i], B[i])){
+         if(uf.diff(A[i], B[i])%2==0) END(No)
+      }
+      else{
+         uf.merge(A[i], B[i], 1);
+      }
+   }
+   PL(Yes)
 
    return;
 }

@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,15 +74,77 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+#include "dp/edit_distance.hpp"
+/*
+string S = "abc", T = "abcd";
+EditDistance ed;
+int dist = ed.solve(S,T);
+int dist = ed.solve(S,T,INSERT_COST, DELETE_COST, CHANGE_COST);
+vector<array<int,3>> op = ed.recovery();
+// {Sの操作文字，Tの操作文字，操作番号}がdist個
+1:削除 2:挿入 3:変更
+復元時，挿入削除による添え字注．
+https://o-treetree.hatenablog.com/entry/DPL1E
+*/
 
 #define endl "\n"
 
-void solve() {
+void solve2() {
 
-   
+   ll N; cin>>N;
+   string T; cin>>T;
+   V<string> S(N); cin>>S;
+
+   V<ll> ans;
+   EditDistance ed;
+   rep(i,N){
+      if(ed.solve(S[i], T) <=1) ans.push_back(i+1);
+   }
+   PL(ans.size())
+   // rep(i,ans.size()) PL(ans[i])
+   PL(ans)
 
    return;
+}
+
+
+void solve(){
+   ll N; cin>>N;
+   string T; cin>>T;
+   V<string> S(N); cin>>S;
+
+   auto g = [&](string& s, string& t)->ll {
+      ll ss = s.size();
+      ll st = t.size();
+      return abs(ss-st);
+   };
+
+   auto f = [&](string& s, string t)->ll {
+      ll cnt = 0;
+      if(s.size()<t.size()) swap(s, t);
+      // len(s) > len(t)
+      while(!s.empty()){
+         if(t.empty()){
+            cnt++;
+         }
+         else if(s.back()!=t.back()){
+            cnt++;
+            if(s.size()==t.size()) t.pop_back();
+         }
+         else{
+            t.pop_back();
+         }
+
+         s.pop_back();
+      }
+      return cnt;
+   };
+
+   V<ll> ans;
+   rep(i,N) if(g(S[i], T)<=1 && f(S[i], T)<=1) ans.push_back(i);
+   ans++;
+   PL(ans.size())
+   PL(ans)
 }
 
 int main() {

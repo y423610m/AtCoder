@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,49 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N,C; cin>>N>>C;
+   V<ll> R(N), A(N);
+   rep(i,N) cin>>R[i]>>A[i];
+   V<ll> L(N);
+   rep(i,N) L[i] = C - R[N-1-i];
+   V<ll> B = A;
+   reverse(ALL(B));
+   EL(L)
+   EL(B)
+
+   // X:距離　D:カロリー
+   auto f = [&](V<ll>& X, V<ll>& D, V<ll>& M) -> void {
+      M.resize(N+1);
+      rep(i,N) M[i+1] = M[i] + D[i];
+      EL(M)
+      rep(i,N) M[i+1] -= X[i];
+      EL(M)
+      rep(i,N) chmax(M[i+1], M[i]);
+   };
+
+   V<ll> MR, ML;
+   f(R, A, MR);
+   f(L, B, ML);
+   EL(MR)
+   EL(ML)
+
+   ll ans = 0;
+   rep(i,N+1) chmax(ans, MR[i]);
+   rep(i,N+1) chmax(ans, ML[i]);
+
+   rep(r,N){
+      ll cand = MR[r+1] - A[r];
+      cand += max(0LL, ML[N-1-r]);
+      chmax(ans, cand);
+   }
+
+   rep(l,N){
+      ll cand = ML[l+1] - B[l];
+      cand += max(0LL, MR[N-1-l]);
+      chmax(ans, cand);
+   }
+
+   PL(ans)
 
    return;
 }

@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,43 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   V<Pll> XY(M); cin>>XY;
+
+   sort(ALL(XY));
+
+   // V<V<ll>> Y(N*2+1);
+   map<ll,V<ll>> Y;
+   for(auto [x,y]:XY){
+      Y[x].push_back(y);
+   }
+
+   unordered_set<ll> pos; pos.reserve(1000000);
+   pos.insert(N);
+   V<ll> cache;
+   for(const auto& [x,yy]:Y){
+      for(auto y:yy){
+         for(ll dy=-1;dy<=1;dy+=2) {
+            ll ny = y+dy;
+            //if(0<=ny&&ny<=M*2){
+            if(pos.contains(ny)) cache.push_back(y);
+               // A[y] = A[ny] | A[y];
+            //}
+         }
+      }
+      for(auto y:yy)//if(0<=y&&y<=M*2){
+         pos.erase(y);
+      //}
+      while(!cache.empty()){
+         ll y = cache.back();
+         //if(0<=y&&y<=M*2) 
+         pos.insert(y);
+         cache.pop_back();
+      }
+      // ES(x) EL(A)
+   }
+
+   PL(pos.size())
 
    return;
 }

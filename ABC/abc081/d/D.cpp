@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,45 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   V<ll> A(N); cin>>A;
+
+   ll M = 0;
+   ll id = 0;
+   rep(i,N){
+      if(M<abs(A[i])){
+         M = abs(A[i]);
+         id = i;
+      }
+   }
+
+   V<Pll> ans;
+   rep(i,N){
+      if(A[i]*A[id]<0){
+         A[i] += A[id];
+         ans.push_back({id, i});
+      }
+   }
+
+
+
+   if(A[id]>0){
+      rep(i,N-1) if(A[i]>A[i+1]){
+         A[i+1] += A[i];
+         ans.push_back({i, i+1});
+      }
+   }
+   else{
+      for(ll i=N-2;i>=0;i--) if(A[i]>A[i+1]){
+         A[i] += A[i+1];
+         ans.push_back({i+1, i});
+      }
+   }
+
+   PL(ans.size())
+   ans++;
+   rep(i,ans.size()) PL(ans[i])
+   EL(A)
 
    return;
 }

@@ -1,3 +1,5 @@
+#pragma GCC target("avx2")
+#pragma GCC optimize("O3")
 #include <bits/stdc++.h>
 using namespace std;
 // #include <atcoder/all>
@@ -12,6 +14,10 @@ constexpr ll MOD = 998'244'353;
 // constexpr ll MOD = 1000'000'007;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
+
+
+//mint
+
 
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
@@ -70,13 +76,69 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+//DRUL  SENW
+int dx[4] = {1, 0, -1, 0};
+int dy[4] = {0, 1, 0, -1};
+
 
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   ll K; cin>>K;
+
+auto inGrid = [&](int nx, int ny){
+    if(0<=nx&&nx<N&&0<=ny&&ny<N) return true;
+    return false;
+};
+
+   V<string> T(N); cin>>T;
+   Ar<Ar<char,8>,8> S;
+   rep(i,N) rep(j,N) S[i][j] = T[i][j];
+
+   unordered_set<ull> st;
+   unordered_set<ull> visited;
+   st.reserve(100000);
+   visited.reserve(100000);
+   ull mask = 0;
+   ull bit = 1;
+
+   auto dfs = [&](auto dfs, int n)->void {
+      // ES(n) EL(mask)
+      // EL(n)
+      visited.insert(mask);
+      if(n==K){
+         st.insert(mask);
+         return;
+      }
+      rep(i,N) rep(j,N) if(S[i][j]=='*'){
+         rep(d,4){
+            int nx = i+dx[d];
+            int ny = j+dy[d];
+            if(inGrid(nx, ny) && S[nx][ny]=='.'){
+               mask |= bit << (N*nx+ny);
+               if(!visited.contains(mask)){
+                  S[nx][ny] = '*';
+                  dfs(dfs, n+1);
+                  S[nx][ny] = '.';
+               }
+               mask ^= bit << (N*nx+ny);
+            }
+         }
+      }
+   };
+
+   rep(i,N) rep(j,N) if(S[i][j]=='.'){
+      S[i][j] = '*';
+      mask |= bit << (N*i+j);
+      dfs(dfs, 1);
+      mask ^= bit << (N*i+j);
+      S[i][j] = '.';
+   }
+
+   PL(st.size())
 
    return;
 }

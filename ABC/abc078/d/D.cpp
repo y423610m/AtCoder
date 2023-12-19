@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -71,12 +75,38 @@ template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
 
-
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,Z,W; cin>>N>>Z>>W;
+   V<ll> A(N); cin>>A;
+
+   // dp[i][j]:=相手のカードがiで自分のカードがjの時のベスト
+   V<V<ll>> dp(N+1, V<ll>(2, -LINF));
+   V<V<bool>> done(N+1, V<bool>(2));
+
+   auto dfs = [&](auto dfs, ll id, ll turn, ll x, ll y)->ll {
+      if(id==N) return abs(x-y);
+      if(done[id][turn]) return dp[id][turn];
+      ES(id) ES(turn) ES(x) EL(y)
+
+      if(turn==0){
+         dp[id][turn] = -LINF;
+         repi(i,id,N) chmax(dp[id][turn], dfs(dfs, i+1, 1-turn, A[i], y));
+      }
+      else{
+         dp[id][turn] = LINF;
+         repi(i,id,N) chmin(dp[id][turn], dfs(dfs, i+1, 1-turn, x, A[i]));
+      }
+      done[id][turn] = true;
+      return dp[id][turn];
+   };
+
+   PL(dfs(dfs, 0, 0, Z, W))
+
+   rep(i,N+1) EL(dp[i])
+
 
    return;
 }

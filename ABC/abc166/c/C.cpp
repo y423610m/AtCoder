@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,32 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+#include "graph/graph_template.hpp"
+/*
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, true);//weighted?
+   Graph<int> G(N, E, false, false);//directed? reverse?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   V<ll> H(N); cin>>H;
+   Edges<int> E = readE<int>(M, -1, false);//weighted?
+   Graph<int> G(N, E, false, false);//directed? reverse?
+
+   ll ans = 0;
+   rep(i,N){
+      bool ok = true;
+      for(const auto& e:G[i]){
+         if(H[e.to]>=H[i]) ok = false;
+      }
+      if(ok) ans++;
+   }
+   PL(ans)
 
    return;
 }

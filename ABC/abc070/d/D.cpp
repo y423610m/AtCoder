@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,52 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include "graph/tree/euler_tour/tree_dist_query.hpp"
+/*
+   ll N; cin>>N;
+   Edges<ll> E = readE<ll>(N-1, -1, true);//weighted?
+   Graph<ll> G(N, E, false);//directed?
+   TreeDistQuery<ll> tdq(N, G, 0);//root
+   
 
+   //edge 辺クエリ
+   for(auto& e:E) tdq.set(e.from, e.to, e.cost);
+   tdq.set(u,v,w);
+   tdq.add(u,v,w);
+   tdq.query(u,v);//u->vへ行く距離（コスト合計）
+   //node 頂点クエリ
+   tdq.set(p, w);
+   tdq.add(p,w);
+   tdq.query(p);//pを含む部分木の合計
+
+   EL(tdq.et.in[x])
+   EL(tdq.et.out[x])
+   EL(tdq.et.depth[x])
+   EL(tdq.et.numOfChildren[x])
+   EL(tdq.et.parent[x])
+   EL(tdq.et.lca(u,v))
+   ABC294G
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   Edges<ll> E = readE<ll>(N-1, -1, true);//weighted?
+   Graph<ll> G(N, E, false);//directed?
+   TreeDistQuery<ll> tdq(N, G, 0);//root
+
+   ll Q; cin>>Q;
+   ll K; cin>>K;K--;
+   for(auto& e:E) tdq.set(e.from, e.to, e.cost);
+
+   rep(q,Q){
+      ll u,v;
+      cin>>u>>v;
+      u--, v--;
+      PL(tdq.query(u,K)+tdq.query(v,K))
+   }
 
    return;
 }

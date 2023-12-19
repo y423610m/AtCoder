@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,51 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   ll M = 100000;
+
+   V<V<ll>> XYZ(N, V<ll>(3)); cin>>XYZ;
+
+   //dp[i][j]:=i番目の選挙区まで見て，j個の選挙区で勝っているときの最小鞍替え人数
+   V<V<ll>> dp(N+1, V<ll>(M+1, LINF));
+   dp[0][0] = 0;
+
+   rep(i,N){
+      // auto [x,y,z] = XYZ[i];
+      ll x = XYZ[i][0];
+      ll y = XYZ[i][1];
+      ll z = XYZ[i][2];
+      dp[i+1] = dp[i];
+      // rep(j,M){
+      //    //負け
+      //    chmin(dp[i+1][j], dp[i+1][j]); 
+      // }
+      ll need = (x+y+1)/2 - x;
+      chmax(need, 0);
+      ES(i) ES(need) EL(XYZ[i])
+      rep(j,M+1){
+         if(j+z>M) break;
+         chmin(dp[i+1][j+z], dp[i][j]+need);
+      }
+   }
+
+   ll total = 0;
+   rep(i,N) total += XYZ[i][2];
+   EL(total)
+
+   ll ans = LINF;
+   // rep(j,M+1) if(j>=(total+1)/2) chmin(ans, dp[N][j]);
+   rep(j,M+1){
+      if(j>total-j) chmin(ans, dp[N][j]);
+      else if(dp[N][j]==89) EL(j)
+   }
+
+   rep(j,200){
+      cerr<<dp[N][j]<<" ";
+      if(j>total-j) cerr<<endl;
+   }
+ 
+   PL(ans)
 
    return;
 }

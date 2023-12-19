@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,54 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include "structure/segtree/longest_continuous_bits.hpp"
+/*
+ll N,Q; cin>>N>>Q;
+V<ll> A(N); cin>>A;
+LongContinuousBits::LazyRMQ<ll> seg(N);
+seg.set(i, LongContinuousBits::GetS1<ll>());
 
+// 0,1をそれぞれ何に変換するか
+seg.apply(L,R,{1, 0});//xor
+seg.apply(L,R,{0, 0});//all 0
+seg.apply(L,R,{1, 1});//all 1
+
+cout<<seg.prod(L,R).long1<<endl;
+num0, num1, long0
+*/
+
+// #include "atcoder/dsu.hpp"
+// using namespace atcoder;
+//dsu DSU(n);
+//DSU.merge(a,b);
+//if(DSU.same(a,b)){}
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   ll Q; cin>>Q;
+   string S; cin>>S;
+
+   LongContinuousBits::LazyRMQ<ll> seg(N);
+   rep(i,N){
+      if(S[i]=='1'){
+         seg.set(i, LongContinuousBits::GetS1<ll>());
+      }
+   }
+
+   rep(q,Q){
+      ll c,L,R;
+      cin>>c>>L>>R;
+      L--;
+      if(c==1){
+         seg.apply(L,R,{1,0});
+      }
+      else{
+         PL(seg.prod(L,R).long1)
+      }
+   }
 
    return;
 }
@@ -92,3 +137,13 @@ int main() {
    for(int tt = 0; tt<TT; tt++) solve();
    return 0;
 }
+
+/*
+ABC322　５完
+A for
+B T.substr() 誤読した
+C lower_bound
+D 再起関数で全探索．バグらせなかったのえらい
+E 5次元dp.K<5のときはAの末尾に0を追加．メビウス使えば楽そう
+F 遅延セグ木．各区間両端が1かどうか，最長1と最長0を保持すればいいはずなんだけど，なぜか合わず．
+*/

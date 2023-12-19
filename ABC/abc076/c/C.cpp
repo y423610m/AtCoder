@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,26 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   string S; cin>>S;
+   string T; cin>>T;
+
+   bool found = false;
+   for(int i=S.size()-1;i>=0;i--){
+      if(i+T.size()>S.size()){
+         continue;
+      }
+      if(!found){
+         bool ok = true;
+         rep(j,T.size()) if(!(S[i+j]==T[j] || S[i+j]=='?')) ok = false;
+         if(ok){
+            rep(j,T.size()) S[i+j] = T[j];
+            found = true;
+         }
+      }
+   }
+   if(!found) END("UNRESTORABLE")
+   rep(i,S.size()) if(S[i]=='?') S[i] = 'a';
+   PL(S)
 
    return;
 }

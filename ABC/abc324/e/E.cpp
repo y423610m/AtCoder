@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -72,11 +76,64 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 
 
+template<typename T, typename Iterator>
+Iterator rlower_bound(Iterator first, Iterator last, T value){
+    return lower_bound(first, last, value, [](const T& a, const T& b){return a>b;});
+}
+template<typename T, typename Iterator>
+Iterator rupper_bound(Iterator first, Iterator last, T value){
+    return upper_bound(first, last, value, [](const T& a, const T& b){return a>b;});
+}
+// auto it = rlower_bound(RALL(A), a);
+
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   string T; cin>>T;
+   V<string> S(N); cin>>S;
+
+   V<ll> post;
+   rep(i,N){
+      V<V<ll>> pos(26);
+      rep(j,S[i].size()) pos[S[i][j]-'a'].push_back(j);
+      rep(j,26) sort(ALL(pos[j]));
+
+      ll cnt = 0;
+      ll p = S[i].size();
+      for(ll j=T.size()-1;j>=0;j--){
+         int c = T[j]-'a';
+         ES(i) ES(j) EL(c)
+         auto it = rupper_bound(RALL(pos[c]), p);
+         if(it==pos[c].rend()) break;
+         else p = *it, cnt++;
+      }
+      EL(cnt)
+      post.push_back(cnt);
+   }
+   sort(ALL(post));
+   EL(post)
+
+   ll ans = 0;
+   rep(i,N){
+      V<V<ll>> pos(26);
+      rep(j,S[i].size()) pos[S[i][j]-'a'].push_back(j);
+      rep(j,26) sort(ALL(pos[j]));
+
+      ll cnt = 0;
+      ll p = -1;
+      rep(j,T.size()){
+         int c = T[j]-'a';
+         auto it = upper_bound(ALL(pos[c]), p);
+         if(it==pos[c].end()) break;
+         else p = *it, cnt++;
+      }
+      EL(cnt)
+      ans += post.end() - lower_bound(ALL(post), T.size()-cnt);
+   }
+
+   PL(ans)
 
    return;
 }

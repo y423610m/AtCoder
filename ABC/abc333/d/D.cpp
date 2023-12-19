@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -54,6 +58,12 @@ template<typename T, typename U> void operator--(pair<T, U>& p, int){p.first--, 
 template<typename T, typename U> void operator++(pair<T, U>& p){p.first++, p.second++;}//pre
 template<typename T, typename U> void operator++(pair<T, U>& p, int){p.first++, p.second++;}//post
 template<class T,class U> struct std::hash<std::pair<T,U>>{size_t operator()(const std::pair<T,U> &p) const noexcept {return (std::hash<T>()(p.first)+1) ^ (std::hash<U>()(p.second)>>2);}};
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type print_tuple(std::ostream&, const std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type print_tuple(std::ostream& os, const std::tuple<T...>& tup){if (n != 0){os << " ";} os << std::get<n>(tup); print_tuple<n+1>(os, tup);}
+template <typename... T> std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {print_tuple<0>(os, tup); return os;}
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>& tup){is>> std::get<n>(tup); input_tuple<n+1>(is, tup);}
+template <typename... T> std::istream& operator>>(std::istream& is, std::tuple<T...>& tup) {input_tuple<0>(is, tup); return is;}
 template<typename T, unsigned long int sz> ostream &operator<<(ostream &os, const array< T , sz > &v) {for(int i = 0; i < sz; i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
 template<typename T, unsigned long int sz> istream &operator>>(istream &is, array< T , sz > &v) {for(T& in:v){cin>>in;} return is;}
 template<typename T, unsigned long int sz> void operator--(array< T , sz > &A){for(auto& a:A){a--;}}//pre
@@ -70,13 +80,68 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include "graph/graph_template.hpp"
+/*
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, true);//weighted?
+   Graph<int> G(N, E, false, false);//directed? reverse?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+*/
 
+#include "graph/tree/rooted_tree.hpp"
+/*
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, false);//weighted?
+   Graph<int> G(N, E, false);//directed?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+
+   RootedTree rt(N, G, 0);
+
+   EL(rt.depth)
+   EL(rt.parent)
+   EL(rt.numOfDescendants)
+   rep(i,N) EL(rt.children[i])
+   EL(rt.farestDescendant)
+   parent[root]=root
+   //Edgeは親->子が含まれていれば,有向でも無向でもOK
+*/
 
 #define endl "\n"
 
 void solve() {
 
+   ll N,M; cin>>N;
+   M = N-1;
+   Edges<int> E = readE<int>(M, -1, false);//weighted?
+   Graph<int> G(N, E, false);//directed?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+
+   // queue<ll, ll> que;
+   // V<ll> deg(N);
+   // rep(i,N){
+   //    deg[i] = 
+   // }
+
+   RootedTree rt(N, G, 0);
+
+   rep(i,N){
+      ES(i) ES(rt.depth[i]) ES(rt.numOfDescendants[i]) EL(rt.children[i])
+   }
    
+
+
+   ll ans = LINF;
+   V<ll> tmp;
+   for(const auto& e:G[0]){
+      tmp.push_back(rt.numOfDescendants[e.to]+1);
+   }
+
+   ll sum = 0;
+   rep(i,tmp.size()) sum += tmp[i];
+   sort(ALL(tmp));
+   if(tmp.size()) sum -= tmp.back();
+   PL(sum+1)
+
 
    return;
 }

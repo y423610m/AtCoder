@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,37 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   Pll A,B,C; cin>>A>>B>>C;
+
+   auto MoveX = [&](Pll& a, Pll& b, ll& dist)->void {
+      if(b.fi==C.fi) return;
+
+      Pll mid = b;
+      if(b.fi < C.fi) mid.fi--;
+      if(C.fi < b.fi) mid.fi++;
+      dist += abs(a.fi-mid.fi);
+      dist += abs(a.se-mid.se);
+
+      if(a.se == b.se && (b.fi-a.fi)(C.fi-a.fi)>0) dist += 2;
+
+
+   };
+
+
+
+   ll ans = LINF;
+   rep(i,2){
+      Pll a = A;
+      Pll b = B;
+      ll d = 0;
+      if(i) MoveX(a, b, d);
+      else MoveY(a, b, d);
+      if(i) MoveY(a, b, d);
+      else MoveX(a, b, d);
+      chmin(ans, d);
+   }
+
+   PL(ans)
 
    return;
 }
@@ -92,3 +126,13 @@ int main() {
    for(int tt = 0; tt<TT; tt++) solve();
    return 0;
 }
+
+/*
+ABC3235完
+A for
+B 数えてソート
+C for
+D mapで小さいのから愚直
+E dp
+F 頭
+*/

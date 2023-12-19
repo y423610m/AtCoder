@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,70 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+// #include "structure/set/top_k_sum_multiset.hpp"
+/*
+TopKSumMultiSet<ll> Kst(K);//小さい方K
+TopKSumMultiSet<ll,greater<ll>> Kst(K);//大きいほうK
+Kst.insert(a);
+Kst.erase(a);
+EL(Kst.sumL);
+EL(Kst.size());
+EL(Kst.clear());
+//ABC281E, ABC306E
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   V<ll> T(N), X(N);
+   rep(i,N) cin>>T[i]>>X[i];
+
+   V<ll> X0, X1, X2;
+   rep(i,N){
+      if(T[i]==0) X0.push_back(X[i]);
+      if(T[i]==1) X1.push_back(X[i]);
+      if(T[i]==2) X2.push_back(X[i]);
+   }
+
+   sort(RALL(X0));
+   sort(RALL(X2));
+
+   multiset<ll> st;
+   multiset<ll> unused;
+   ll ans = 0;
+   ll sum = 0;
+   rep(i,X0.size()){
+      st.insert(X0[i]);
+      sum += X0[i];
+   }
+   while(st.size()>M){
+      sum -= *st.begin();
+      unused.insert(*st.begin());
+      st.erase(st.begin());
+   }
+
+   chmax(ans, sum);
+   EL(ans) EL(st.size())
+
+   sort(ALL(X1));
+   rep(i,X2.size()){
+      rep(_,X2[i]){
+         if(X1.size()==0) break;
+         sum += X1.back();
+         st.insert(X1.back());
+         X1.pop_back();
+      }
+      while(!st.empty() && ll(st.size()) > M - (i+1)){
+         sum -= *st.begin();
+         st.erase(st.begin());
+      }
+      chmax(ans, sum);
+      ES(i) ES(sum) EL("")
+   }
+
+   PL(ans)
 
    return;
 }

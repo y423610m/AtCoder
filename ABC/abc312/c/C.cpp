@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,41 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+template<typename T, typename F>
+T binSearch(T ok, T ng, F check){
+   while(abs(ok-ng)>1){
+       T mid = (ok+ng)/2;
+       if(check(mid)) ok=mid;
+       else ng=mid;
+   }
+   return ok;
+}
+
 
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   V<ll> A(N); cin>>A;
+   V<ll> B(M); cin>>B;
+
+   sort(ALL(A));
+   sort(ALL(B));
+
+   auto check = [&](auto x){
+      ll seller = upper_bound(ALL(A), x) - A.begin();
+      // ll buyer = N - (lower_bound(ALL(B), x+1) - B.begin()) + 1;
+      ll buyer = B.end() - lower_bound(ALL(B), x);
+      ES(x) ES(seller) EL(buyer)
+      if(seller>=buyer) return true;
+      return false;
+   };
+
+   ll ans = binSearch(LINF, -1LL, check);
+
+   PL(ans)
 
    return;
 }

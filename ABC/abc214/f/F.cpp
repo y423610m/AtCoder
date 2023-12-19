@@ -8,10 +8,25 @@ using ld = long double;
 using ull = unsigned long long;
 using lll = __int128_t;
 using ulll = __uint128_t;
-constexpr ll MOD = 998'244'353;
-// constexpr ll MOD = 1000'000'007;
+// constexpr ll MOD = 998'244'353;
+constexpr ll MOD = 1000'000'007;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
+
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
 
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
@@ -60,7 +75,7 @@ template<typename T, unsigned long int sz> void operator--(array< T , sz > &A){f
 template<typename T, unsigned long int sz> void operator--(array< T , sz > &A, int){for(auto& a:A){a--;}}//post
 template<typename T, unsigned long int sz> void operator++(array< T , sz > &A){for(auto& a:A){a++;}}//pre
 template<typename T, unsigned long int sz> void operator++(array< T , sz > &A, int){for(auto& a:A){a++;}}//post
-template<typename T> ostream &operator<<(ostream &os, const vector< T > &v) {for(int i = 0; i < (int) v.size(); i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
+template<typename T> ostream &operator<<(ostream &os, const vector< T > &v) {for(int i = 0; i < (int) v.size(); i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "\n");}return os;}
 template<typename T> istream &operator>>(istream &is, vector< T > &v) {for(T &in : v) is >> in;return is;}
 template<typename T> void operator--(vector<T>& A){for(auto& a:A) a--;}//pre
 template<typename T> void operator--(vector<T>& A, int){for(auto& a:A) a--;}//post
@@ -76,7 +91,36 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   V<V<ll>> A(5, V<ll>(5));
+   PL(A)
+
+   string S; cin>>S;
+   ll N = S.size();
+
+   V<set<ll>> st(26);
+   //rep(i,26) st.insert(LINF);
+
+   rep(i,N){
+      st[S[i]-'a'].insert(i+1);
+   }
+
+   V<mint> dp(N+1);
+   dp[0] = 1;
+   rep(i,N){
+      rep(j,26){
+         auto it = st[j].upper_bound(i);
+         if(it==st[j].end()) continue;
+         if(i!=0 && *it==i+1) it++;
+         if(it==st[j].end()) continue;
+         dp[*it] += dp[i];
+      }
+   }
+
+   EL(dp)
+
+   mint ans = 0;
+   rep(i,N) ans += dp[i+1];
+   PL(ans)
 
    return;
 }

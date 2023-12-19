@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,49 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   V<Pll> R(N), B(N); cin>>R>>B;
+
+
+
+   V<Ar<ll,3>> A;//col, x, y;
+   rep(i,N) A.push_back({0, R[i].fi, R[i].se});
+   rep(i,N) A.push_back({1, B[i].fi, B[i].se});
+
+   sort(ALL(A),[&](auto a, auto b){
+      if(a[1]!=b[1]) return a[1]>b[1];//x
+      if(a[0]!=b[0]) return a[0]>b[0];// r<b
+      return a[2] < b[2];
+   });
+
+   rep(i,2*N) EL(A[i])
+
+   ll ans = 0;
+   multiset<ll> st;
+   V<ll> cache;
+   ll lastX = -1;
+   rep(i,N*2){
+      auto [col, x, y] = A[i];
+      if(lastX!=x){
+         while(cache.size()){
+            st.insert(cache.back());
+            cache.pop_back();
+         }
+      }
+
+      if(col==0){//r
+         auto it = st.upper_bound(y);
+         if(it!=st.end()){
+            ans++;
+            st.erase(it);
+         }
+      }
+      else{
+         cache.push_back(y);
+         lastX = x;
+      }
+   }
+   PL(ans)
 
    return;
 }

@@ -70,13 +70,45 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+#include "graph/others/periodic_graph.hpp"
+/*
+ll N,M; cin>>N>>M;
+Edges<int> E = readE<int>(M, -1, false);//weighted?
+Graph<int> G(N, E, true, false);//directed? reverse?
+Graph<int> inG(N, E, true, true);//directed? reverse?
+PeriodicGraph<int> pg;
+pg.build(N, G, inG);
+// pg.Proceed(start, k)
+vector<pair<int, int>> loopIdx;//[頂点iが属する閉路のid,閉路内id].属さないなら-1
+vector<vector<int>> loops;//実際に要素格納.[i][j]:=i番目のループのj番目の頂点
+vector<pair<int,CostT>> nearestLoop;//{最近ループ上頂点, そこまでの距離}
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   Edges<int> E;
+   rep(i,N){
+      ll a; cin>>a; a--;
+      E.push_back({i, a});
+   }
+   Graph<int> G(N, E, true, false);//directed? reverse?
+   Graph<int> inG(N, E, true, true);//directed? reverse?
+   PeriodicGraph<int> pg;
+   pg.build(N, G, inG);
+
+   auto& loops = pg.loops;
+   for(auto& loop:loops){
+      if(loop.size()>0){
+         PL(loop.size())
+         for(auto p:loop){
+            PS(p+1)
+         }
+         END("")
+      }
+   }
 
    return;
 }

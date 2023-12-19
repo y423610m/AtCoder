@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,9 +80,100 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   V<Pll> XY(N); cin>>XY;
+
+   auto calcDist = [&](int i, int j)-> ld {
+      return sqrt((XY[i].fi-XY[j].fi)*(XY[i].fi-XY[j].fi) 
+      + (XY[i].se-XY[j].se)*(XY[i].se-XY[j].se));
+   };
+
+   // dp[i][j]　
+   V<V<ld>> dp(N+1, V<ld>(N+1, LINF));
+   rep(i,N-1) dp[i][i+1] = calcDist(i,i+1);
+   rep(i,N) dp[i][i] = 0;
+
+   // for(ll l=N-2;l>=0;l--){
+   //    for(ll r=l+1;r<N;r++){
+   //       for(ll m=l;m<=r;m++){
+   //          chmin(dp[l][r], dp[l][m]+dp[m][r]);
+   //          chmin(dp[l][r], dp[l][m]+);
+   //       }
+   //    }
+   // }
+
+   PL(dp[0][N-1])
 
    return;
+}
+
+void solve2(){
+   ll N; cin>>N;
+   V<Pll> XY(N); cin>>XY;
+   auto calcDist = [&](int i, int j)-> ld {
+      return sqrt((XY[i].fi-XY[j].fi)*(XY[i].fi-XY[j].fi) 
+      + (XY[i].se-XY[j].se)*(XY[i].se-XY[j].se));
+   };
+
+   V<ld> dp(N+1);
+   rep(i,N-1) dp[i+1] = calcDist(i,i+1);
+   rep(i,N) dp[i+1] += dp[i];
+
+   rep(r,N){
+      rep(l,r+1){
+         chmin(dp[r], dp[l]+pow<ld>(2, r-l)-calcDist(l,r));
+         ES(l) ES(r) EL(dp)
+      }
+   }
+   EL(dp)
+   PL(dp[N-1])
+
+}
+
+void solve3(){
+   ll N; cin>>N;
+   V<Pll> XY(N); cin>>XY;
+   auto calcDist = [&](int i, int j)-> ld {
+      return sqrt((XY[i].fi-XY[j].fi)*(XY[i].fi-XY[j].fi) 
+      + (XY[i].se-XY[j].se)*(XY[i].se-XY[j].se));
+   };
+
+   EL(calcDist(0,1))
+
+   //dp[i][j]:=iにいて，j回スキップ
+   ll linf = LINF;
+   ll M = N+1;
+   V<V<ld>> dp(N+1, V<ld>(M+1, linf));
+   dp[0][0] = 0;
+   // rep(i,N-1) dp[i+1][0] = calcDist(i,i+1);
+   // rep(i,N) dp[i+1][0] += dp[i][0];
+   // EL(dp[1][0])
+   // EL(dp[N-1][0])
+
+   rep(i,N){
+      for(ll c=0;c<M;c++) if(dp[i][c]!=linf){
+         for(ll skip=0;skip<M;skip++){
+            ll to = i + skip + 1;
+            ll nxtSkip = c+skip;
+            if(to >= N) break;
+            if(nxtSkip>=M) break;
+            chmin(dp[to][nxtSkip], dp[i][c]+calcDist(i, to));
+         }
+      }
+   }
+
+   rep(i,N){
+      ES(i) EL(dp[i])
+   }
+
+   ld ans = dp[N-1][0];
+   repi(cnt,1,M){
+      ld cand = dp[N-1][cnt] + pow<ld>(2, cnt-1);
+      chmin(ans, cand);
+      ES(cnt) EL(cand)
+   }
+   PL(ans)
+
 }
 
 int main() {
@@ -89,6 +184,16 @@ int main() {
    // stoll(s,nullptr,base);
    int TT = 1;
    //cin>>TT;
-   for(int tt = 0; tt<TT; tt++) solve();
+   for(int tt = 0; tt<TT; tt++) solve3();
    return 0;
 }
+
+/*
+ABC315 5完
+A やる
+B やる．1WA
+C multiset
+D 縦横の各列の各文字の個数覚える
+E bfs2回くらいした．もっといい実装ありそう．
+F dp[i][j]:=iに居て，j回スキップした最小値．解説のスキップの上限が100程度でいいことに気付かず．
+*/

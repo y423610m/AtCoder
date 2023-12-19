@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,71 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll A,B; cin>>A>>B;
+   ES(A) EL(B)
+
+   ll H = 100;
+   ll W = 100;
+   V<string> G(H, string(W, '.'));
+
+   /*
+######
+######
+######
+######
+.....
+.....
+.....
+.....
+   */
+
+   rep(h,50) rep(w,W) G[h][w] = '#';
+
+   V<Pll> White, Black;
+   for(ll h=0;h<H;h+=2){
+      for(ll w=1;w<W;w+=2){
+         G[h][w] = '.';
+         White.push_back({h,w});
+         if(White.size()>=499){
+            h=LINF;
+            w=LINF;
+            break;
+         }
+      }
+   }
+
+   for(ll h=H-1;h>=0;h-=2){
+      for(ll w=1;w<W;w+=2){
+         G[h][w] = '#';
+         Black.push_back({h,w});
+         if(Black.size()>=499){
+            h=-1;
+            w=LINF;
+            break;
+         }
+      }
+   }
+
+   EL(White.size())
+   while(White.size()+1>A){
+      auto [h,w] = White.back();
+      White.pop_back();
+      G[h][w] = '#';
+   }
+   EL(White.size())
+
+   EL(Black.size())
+   while(Black.size()+1>B){
+      auto [h,w] = Black.back();
+      Black.pop_back();
+      G[h][w] = '.';
+   }
+   EL(Black.size())
+
+   EL(White)
+   EL(Black)
+
+   rep(h,H) PL(G[h])
 
    return;
 }

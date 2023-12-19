@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,99 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#if __has_include(<atcoder/lazysegtree>)
+#include <atcoder/lazysegtree>
+using namespace atcoder;
+#endif
 
+namespace Lazy{
+   template<typename T>
+   struct S{
+      T x;
+      ll size=1;
+   };
+
+   template<typename T>
+   struct F{
+      T a,b;
+   };
+
+   template<typename T> S<T> opSum(S<T> l, S<T> r){return S<T>{l.x+r.x, l.size+r.size};}
+   template<typename T> S<T> opMax(S<T> l, S<T> r){return (l.x>=r.x?l:r);}
+   template<typename T> S<T> opMin(S<T> l, S<T> r){return (l.x<=r.x?l:r);}
+
+   template<typename T> S<T> e0(){return S<T>{0, 1};}
+   template<typename T> S<T> eLINF(){return S<T>{LINF, 1};}
+   template<typename T> S<T> e_LINF(){return S<T>{-LINF, 1};}
+
+   template<typename T>
+   S<T> FS(F<T> f, S<T> s){
+      return S<T>{f.a*s.x+f.b*s.size, s.size};//ax+b
+   }
+
+   template<typename U=ll>
+   F<U> FF(F<U> l, F<U> r){
+      return F<U>{l.a*r.a, l.a*r.b+l.b};
+   }
+
+   template<typename U=ll>
+   F<U> f0(){
+      return F<U>{1,0};
+   }
+   template<typename T=ll> using LazyRSQ = lazy_segtree<S<T>, opSum<T>, e0<T>,     F<T>, FS<T>, FF<T>, f0<T>>;
+   template<typename T=ll> using LazyRMQ = lazy_segtree<S<T>, opMax<T>, e_LINF<T>, F<T>, FS<T>, FF<T>, f0<T>>;
+   template<typename T=ll> using LazyRmQ = lazy_segtree<S<T>, opMin<T>, eLINF<T>,  F<T>, FS<T>, FF<T>, f0<T>>;
+   /*
+   ll N,Q; cin>>N>>Q;
+   V<ll> A(N); cin>>A;
+   Lazy::LazyRSQ<mint> tree(N);
+   rep(i,N) tree.set(i, {A[i],1});// {x, size}
+
+   tree.apply(l,r,LS::F<mint>{a,b});//ax+b
+   cout<<tree.prod(l,r).x<<endl;
+   */
+}
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,D,W; cin>>N>>D>>W;
+
+   V<Pll> TX(N); cin>>TX;
+   sort(ALL(TX));
+
+   ll ans = 0;
+   ll sz = 200005;
+   Lazy::LazyRMQ<ll> seg(sz);
+   rep(i, sz) seg.set(i, {0,1});
+   queue<Pll> que;
+   rep(i,N){
+      {
+         auto [t, x] = TX[i];
+         ll l = x;
+         ll r = x+W;
+         chmax(l, 0);
+         chmin(r, sz);
+         que.push(TX[i]);
+         seg.apply(l, r, Lazy::F<ll>{1, 1});
+      }
+      while(!que.empty() && TX[i].fi-que.front().fi>=D){
+         auto [t, x] = que.front();
+         ll l = x;
+         ll r = x+W;
+         chmax(l, 0);
+         chmin(r, sz);
+         que.pop();
+         seg.apply(l, r, Lazy::F<ll>{1, -1});
+      }
+      ll cand = seg.prod(0, sz).x;
+      ES(i) EL(cand)
+      chmax(ans, cand);
+   }
+
+   PL(ans)
+
 
    return;
 }
@@ -92,3 +182,14 @@ int main() {
    for(int tt = 0; tt<TT; tt++) solve();
    return 0;
 }
+
+/*
+ABC327 6完
+A for
+B for
+C for
+D 重み付きUF
+E 分子だけで2次元dp.一部小数精度足りず2WA
+F 時間でソートして遅延セグ木．[x, x+W)に±1していく
+G ?
+*/

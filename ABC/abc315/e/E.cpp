@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,82 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+#include "graph/graph_template.hpp"
+/*
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, true);//weighted?
+   Graph<int> G(N, E, false, false);//directed? reverse?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   V<ll> C(N);
+   V<V<ll>> P(N);
+   rep(i,N){
+      cin>>C[i];
+      P[i].resize(C[i]);
+      cin>>P[i];
+      P[i]--;
+   }
+   rep(i,N) EL(P[i])
+
+   Edges<int> E;
+   Edges<int> inE;
+   rep(from, N){
+      for(auto to: P[from]){
+         E.push_back({from, to});
+         inE.push_back({to, from});
+      }
+   }
+
+   Graph<int> G(N, E, true, false);//directed? reverse?
+   Graph<int> inG(N, inE, true, false);//directed? reverse?
+
+
+
+   queue<ll> que;
+   que.push(0);
+   V<bool> need(N,false);
+   need[0] = true;
+   while(!que.empty()){
+      ll p = que.front(); que.pop();
+      ES("need") EL(p)
+      for(const auto& e:G[p]) if(!need[e.to]){
+         need[e.to] = true;
+         que.push(e.to);
+      }
+   }
+   EL(need)
+
+   V<ll> in(N);
+   rep(i,N) in[i] = G[i].size();
+   rep(i,N) if(need[i]&&in[i]==0){
+      que.push(i);
+   }
+   EL(in)
+
+   V<ll> ans;
+   V<bool> visited(N, false);
+   while(!que.empty()){
+      int p = que.front(); que.pop();
+      if(p==0) break;
+      ans.push_back(p);
+      for(const auto& e:inG[p]) if(!visited[e.to] && need[e.to]){
+         in[e.to]--;
+         if(in[e.to]==0){
+            visited[e.to] = true;
+            que.push(e.to);
+         }
+      }
+   }
+
+   // reverse(ALL(ans));
+   ans++;
+   PL(ans)
 
    return;
 }

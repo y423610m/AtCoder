@@ -13,6 +13,19 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +83,48 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+//DRUL  SENW
+int dx[4] = {1, 0, -1, 0};
+int dy[4] = {0, 1, 0, -1};
+
 
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll H,W; cin>>H>>W;
+   V<string> S(H); cin>>S;
+
+auto inGrid = [&](int nx, int ny){
+    if(0<=nx&&nx<H&&0<=ny&&ny<W) return true;
+    return false;
+};
+
+   rep(h,H) rep(w,W){
+      if(h-1>=0&&S[h-1][w]=='#') S[h][w] = '#';
+      if(h-1>=0&&w-1>=0&&S[h-1][w-1]=='#') S[h][w] = '#';
+   }
+
+   rep(h,H) EL(S[h])
+
+   // V<V<V<mint>>> dp(H, V<V<mint>>(W, V<mint>(2)));
+   V<mint> dp(W+1);
+   dp[W] = 1;
+   for(ll c=-W+1;c<=H-1;c++){
+      for(ll j=W-1;j>=0;j--){
+         dp[j] += dp[j+1];
+      }
+      for(ll j=0;j<W;j++){
+         ll i = j+c;
+         if(i<0) dp[j] = 0;
+         else if(i>=H || S[i][j]=='#') dp[j+1] = 0;
+      }
+   }
+
+   mint ans = 0;
+   rep(i,W+1) ans += dp[i];
+   PL(ans)
 
    return;
 }

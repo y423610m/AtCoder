@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -54,6 +58,12 @@ template<typename T, typename U> void operator--(pair<T, U>& p, int){p.first--, 
 template<typename T, typename U> void operator++(pair<T, U>& p){p.first++, p.second++;}//pre
 template<typename T, typename U> void operator++(pair<T, U>& p, int){p.first++, p.second++;}//post
 template<class T,class U> struct std::hash<std::pair<T,U>>{size_t operator()(const std::pair<T,U> &p) const noexcept {return (std::hash<T>()(p.first)+1) ^ (std::hash<U>()(p.second)>>2);}};
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type print_tuple(std::ostream&, const std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type print_tuple(std::ostream& os, const std::tuple<T...>& tup){if (n != 0){os << " ";} os << std::get<n>(tup); print_tuple<n+1>(os, tup);}
+template <typename... T> std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {print_tuple<0>(os, tup); return os;}
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>& tup){is>> std::get<n>(tup); input_tuple<n+1>(is, tup);}
+template <typename... T> std::istream& operator>>(std::istream& is, std::tuple<T...>& tup) {input_tuple<0>(is, tup); return is;}
 template<typename T, unsigned long int sz> ostream &operator<<(ostream &os, const array< T , sz > &v) {for(int i = 0; i < sz; i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
 template<typename T, unsigned long int sz> istream &operator>>(istream &is, array< T , sz > &v) {for(T& in:v){cin>>in;} return is;}
 template<typename T, unsigned long int sz> void operator--(array< T , sz > &A){for(auto& a:A){a--;}}//pre
@@ -76,7 +86,47 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   string S; cin>>S;
+   ll X,Y;
+   cin>>X>>Y;
+
+   const ll M = 200000;
+   bitset<M> R,L,U,D;
+   R.set(M/2);
+   U.set(M/2);
+   D.set(M/2);
+
+   bool doneT = false;
+   bool isX = true;
+
+   rep(i,S.size()){
+      if(S[i]=='T'){
+         
+         if(isX){
+            U = U | D;
+            D = U | D;
+         }
+         else{
+            R = L|R;
+            L = L|R;
+         }
+
+         isX = !isX;
+      }
+      else{
+         if(isX){
+            R <<= 1;
+            L >>= 1;
+         }
+         else{
+            U >>= 1;
+            D <<=1;
+         }
+      }
+   }
+
+   if((R[X+M/2] | L[X+M/2]) && (U[Y+M/2]|D[Y+M/2])) END(Yes)
+   PL(No)
 
    return;
 }

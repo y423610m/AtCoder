@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,115 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+//DRUL  SENW
+int dx[4] = {1, 0, -1, 0};
+int dy[4] = {0, 1, 0, -1};
 
 
 #define endl "\n"
 
 void solve() {
 
+   ll N,X,Y; cin>>N>>X>>Y;
+   V<ll> A(N); cin>>A;
    
+   if(N<=10){
+      string S;
+      bool found = false;
+      auto dfs = [&](auto dfs, ll id, ll x, ll y, ll dir)->void {
+         ES(id) ES(x) EL(y)
+         if(id==N){
+            if(x==X && y==Y){
+               found = true;
+            }
+            return;
+         }
+
+         rep(i,2){
+            ll nxtdir = dir;
+            if(i==0){
+               nxtdir = (dir+1) % 4;
+               S += "L";
+            }
+            else{
+               nxtdir = (dir+3) % 4;
+               S += "R";
+            }
+
+            dfs(dfs, id+1, x + A[id] *dx[nxtdir], y + A[id] *dy[nxtdir], nxtdir);
+            if(found) return;
+            S.pop_back();
+         }
+      };
+
+      ll x=0, y=0, dir=0;
+      dfs(dfs, 0, x, y, dir);
+      if(found){
+         PL(Yes)
+         PL(S)
+      }
+      else{
+         PL(No)
+      }
+      return;
+   }
+   else{
+      V<ll> B, C;
+      rep(i,N){
+         if(i%2==0) B.push_back(A[i]);
+         else C.push_back(A[i]);
+      }
+
+      V<ll> ans(2, -1);
+      rep(i,2){
+         V<ll>& D = (i==0)? B:C;
+         ll M = D.size() / 2;
+         map<ll,ll> mp;
+         rep(mask, 1LL<<M){
+            ll p = 0;
+            rep(bit, M){
+               if(mask&(1<<bit)) p += D[bit];
+               else p -= D[bit];
+            }
+            mp[p] = mask;
+         }
+         rep(mask, 1LL<<(D.size()-M)){
+            ll p = 0;
+            rep(bit, D.size()-M){
+               if(mask&(1<<bit)) p += D[bit+M];
+               else p -= D[bit+M];
+            }
+            ll Z = (i==1)? X:Y;
+            if(mp.find(Z-p)!=mp.end()){
+               ll mask1 = mp.find(Z-p)->se;
+               ans[i] = (mask << M) | mask1;
+            }
+         }
+      }
+      EL(ans)
+
+      if(ans[0]==-1 || ans[1]==-1) END(No)
+
+      PL(Yes)
+      ll d = 0;
+      string S;
+      rep(i,N){
+         ll nxtd = -1;
+         if(i%2==0){
+            if(ans[i%2]&(1LL<<(i/2))) nxtd = 1;
+            else nxtd = 3;
+         }
+         else{
+            if(ans[i%2]&(1LL<<(i/2))) nxtd = 0;
+            else nxtd = 2;
+         }
+         if((d+1)%4==nxtd) S += "L";
+         else S += "R";
+         d = nxtd;
+      }
+      if(S.size()>N) S.pop_back();
+      PL(S)
+   }
 
    return;
 }
@@ -92,3 +198,5 @@ int main() {
    for(int tt = 0; tt<TT; tt++) solve();
    return 0;
 }
+
+

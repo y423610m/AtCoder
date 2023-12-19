@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,59 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+#include "structure/vector/biased_vector.hpp"
+template<typename T> using BV = biased_vector<T>;
+/*
+BV<ll> vec;//vectorと同じコンストラクタ
+vec.setB(-5);//先頭のインデックスを決定
+B[-5] = 3;
+EL(B)//->vectorの<<が呼ばれる
+for(auto),B.begin()なども，内部vector基準
+*/
 
 #define endl "\n"
 
+//RULD  SENW
+// int dx[4] = {1, 0, -1, 0};
+// int dy[4] = {0, 1, 0, -1};
+
 void solve() {
 
-   
+   string S; cin>>S;
+   ll X,Y; cin>>X>>Y;
+
+   ll N = S.size();
+
+   ll dx
+
+   //dp[i][j][k]:=i回移動してjにいて，向きがkが取りうる
+   V<V<bool>> tate(N*4, V<bool>(4));
+   V<V<bool>> tateNxt(N*4, V<bool>(4));
+   V<V<bool>> yoko(N*4, V<bool>(4));
+   V<V<bool>> yokoNxt(N*4, V<bool>(4));
+
+   V<bool> d(4, false);
+   V<bool> dnxt(4, false);
+   d[0] = true;
+
+   // int direction = 0
+
+   rep(i,N){
+      if(S[i]=='F'){
+         rep(dir,4) if(d[dir]){
+            rep(i,N*4) = 
+         }
+      }
+      else{
+         dnxt.assign(4, false);
+         rep(dir,4) if(d[dir]){
+            dnxt[(dir+1)%4] = true;
+            dnxt[(dir+3)%4] = true;
+         }
+      }
+   }
+
+
 
    return;
 }

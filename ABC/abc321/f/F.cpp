@@ -13,6 +13,21 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +85,35 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+#if __has_include(<atcoder/convolution>)
+#include <atcoder/convolution>
+using namespace atcoder;
+/*
+V<int> A(n), B(m);
+auto C = atcoder::convolution<MOD>(A, B);
+*/
+#endif
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll Q,K; cin>>Q>>K;
+   ll N = K+Q;
+   V<mint> dp(N+1);
+   dp[0] = 1; 
+   rep(q,Q){
+      char op; cin>>op;
+      ll x; cin>>x;
+      if(op=='+'){
+         for(ll i=N;i>=0;i--) if(i+x<=N) dp[i+x] += dp[i];
+      }
+      else{
+         for(ll i=0;i<=N;i++) if(i+x<=N) dp[i+x] -= dp[i];
+      }
+      PL(dp[K])
+   }
+
 
    return;
 }

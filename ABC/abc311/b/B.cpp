@@ -76,8 +76,27 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N,D; cin>>N>>D;
+   V<string> S(N); cin>>S;
 
+   V<ll> cnt(D);
+   rep(i,N){
+      rep(j,D) if(S[i][j]=='x') cnt[j]++;
+   }
+
+   ll ans = 0;
+   ll cand = 0;
+   rep(i,D){
+      if(cnt[i]==0){
+         cand++;
+      }
+      else{
+         cand = 0;
+      }
+      chmax(ans, cand);
+   }
+
+   PL(ans)
    return;
 }
 

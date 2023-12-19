@@ -76,7 +76,14 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll K; cin>>K;
+   string S; cin>>S;
+
+   if(S.size()<=K) PL(S)
+   else{
+      cout<<S.substr(0, K)<<"..."<<endl;
+   }
+
 
    return;
 }

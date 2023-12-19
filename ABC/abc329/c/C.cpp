@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -54,6 +58,12 @@ template<typename T, typename U> void operator--(pair<T, U>& p, int){p.first--, 
 template<typename T, typename U> void operator++(pair<T, U>& p){p.first++, p.second++;}//pre
 template<typename T, typename U> void operator++(pair<T, U>& p, int){p.first++, p.second++;}//post
 template<class T,class U> struct std::hash<std::pair<T,U>>{size_t operator()(const std::pair<T,U> &p) const noexcept {return (std::hash<T>()(p.first)+1) ^ (std::hash<U>()(p.second)>>2);}};
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type print_tuple(std::ostream&, const std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type print_tuple(std::ostream& os, const std::tuple<T...>& tup){if (n != 0){os << " ";} os << std::get<n>(tup); print_tuple<n+1>(os, tup);}
+template <typename... T> std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {print_tuple<0>(os, tup); return os;}
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>& tup){is>> std::get<n>(tup); input_tuple<n+1>(is, tup);}
+template <typename... T> std::istream& operator>>(std::istream& is, std::tuple<T...>& tup) {input_tuple<0>(is, tup); return is;}
 template<typename T, unsigned long int sz> ostream &operator<<(ostream &os, const array< T , sz > &v) {for(int i = 0; i < sz; i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
 template<typename T, unsigned long int sz> istream &operator>>(istream &is, array< T , sz > &v) {for(T& in:v){cin>>in;} return is;}
 template<typename T, unsigned long int sz> void operator--(array< T , sz > &A){for(auto& a:A){a--;}}//pre
@@ -70,13 +80,94 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+vector<pair<char, int>> RLE(const string& s){
+   vector<pair<char, int>> ret;
+   for(int i=0;i<(int)s.size();i++){
+      if(ret.size()==0) ret.push_back({s[i],1});
+      else if(ret.back().first==s[i]) ret.back().second++;
+      else ret.push_back({s[i], 1});
+   }
+   return ret;
+}
+
+template <typename T>
+vector<pair<T, int>> RLE(const vector<T>& vec){
+   vector<pair<T, int>> ret;
+   for(int i=0;i<(int)vec.size();i++){
+      if(ret.size()==0) ret.push_back({vec[i],1});
+      else if(ret.back().first==vec[i]) ret.back().second++;
+      else ret.push_back({vec[i], 1});
+   }
+   return ret;
+}
+
 
 
 #define endl "\n"
 
-void solve() {
+void solve(){
+   ll N; cin>>N;
+   string S; cin>>S;
 
-   
+   map<char, ll> mp;
+   auto rle = RLE(S);
+
+   for(const auto[c, n]:rle){
+      chmax(mp[c], n);
+   }
+
+   ll ans = 0;
+   for(char c='a';c<='z';c++){
+      ans += mp[c];
+   }
+   PL(ans)
+}
+
+void solve1() {
+
+   ll N; cin>>N;
+   string S; cin>>S;
+
+   set<string> st;
+
+   rep(i,N){
+      string t;
+      set<char> cnt;
+      rep(j,N){
+         if(i+j>=N) break;
+         t += S[i+j];
+         cnt.insert(S[i+j]);
+         if(cnt.size()!=1) break;
+         // if(st.contains(t)) break;
+         st.insert(t);
+      }
+   }
+
+   for(auto s:st){
+      EL(s)
+   }
+
+   PL(st.size())
+}
+
+void solve2() {
+
+   ll N; cin>>N;
+   string S; cin>>S;
+
+   V<ll> cnt(256);
+   queue<ll> que;
+   ll ans = 0;
+   rep(i,N){
+      que.push(S[i]);
+      cnt[S[i]]++;
+      while(cnt[S[i]]>1){
+         cnt[que.front()]--;
+         que.pop();
+      }
+      ans += que.size();
+   }
+   PL(ans)
 
    return;
 }

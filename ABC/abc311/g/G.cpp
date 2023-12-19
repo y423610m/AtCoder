@@ -76,6 +76,47 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
+   ll N,M; cin>>N>>M;
+   V<V<ll>> A(N, V<ll>(M)); cin>>A;
+
+   V<V<ll>> sum(N+1, V<ll>(M+1));
+   rep(i,N){
+      rep(j,M){
+         sum[i+1][j+1] += A[i][j] + sum[i+1][j] + sum[i][j+1] - sum[i][j];
+      }
+   }
+
+   ll ans = 0;
+   for(ll mi=1;mi<=300;mi++){
+      V<Pll> B(M);
+      rep(i,M) B[i] = {0, i};
+
+      rep(i,N){
+         V<Pll> top, bottom;
+         for(auto [f,s]:B){
+            if(A[i][s]>=mi) top.push_back({f+1, s});
+            else bottom.push_back({0, s});
+         }
+         B.clear();
+         for(auto t:top) B.emplace_back(t);
+         for(auto b:bottom) B.emplace_back(b);
+
+         V<ll> L(M), R(M);
+         rep(j,M){
+            L[j] = j-1;
+            R[j] = j+1;
+         }
+
+         for(auto [f,s]:B){
+            ll cl = L[s];
+            ll cr = R[s];
+            if(cl>=0) R[cl] = cr;
+            if(cr<M) L[cr] = cl;
+            chmax(ans, mi * (sum[i+1][cr]-sum[i+1][cl+1]-sum[i-f+1][cr]+sum[i-f+1][cl+1]));
+         }
+      }
+   }
+   PL(ans)
    
 
    return;

@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,52 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include "graph/shortest_path/dijkstra.hpp"
+/*
+    ll N; cin>>N;
+    ll M; cin>>M;
 
+    Edges<int> E = readE<int>(M, -1, false);//辺数，index, weight
+    Graph<int> G(N, E, false);//頂点数，Edges, 有向
+
+    Dijkstra<int> di(N, INF);//頂点数，初期距離
+    di.solve(G, 0, 0, false);//G, start, goal, 通り数える
+
+    EL(di.dist)
+    EL(di.find_path(N-1))
+    EL(di.find_edges(N-1))
+    EL(di.cnt)
+    Dijkstra<int, mint> <-cntに用いる型
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   ll M; cin>>M;
+   ll L; cin>>L;
+   V<ll> R(L); cin>>R; R--;
+
+   Edges<int> E = readE<int>(M, -1, true);//辺数，index, weight
+   Graph<int> G(N, E, false);//頂点数，Edges, 有向
+
+   V<Dijkstra<int>> di(L, Dijkstra<int>(N, INF));//頂点数，初期距離
+   rep(l,L) di[l].solve(G, R[l]);//G, start, goal, 通り数える
+
+   ll ans = LINF;
+   ll maskAll = (1<<L)-1;
+   V<V<ll>> dp(1<<L, V<ll>(L,LINF));//mask, pos
+   rep(l,L) dp[1<<l][l] = 0;
+   rep(mask, 1<<L){
+      rep(from,L) if(mask&(1<<from)){
+         rep(to, L){
+            chmin(dp[mask|(1<<to)][to], dp[mask][from]+di[from].dist[R[to]]);
+            if(maskAll==(mask|(1<<to))) chmin(ans, dp[mask|(1<<to)][to]);
+         }
+      }
+   }
+   PL(ans)   
 
    return;
 }

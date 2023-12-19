@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,157 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+using P = Pll;
 
+#include "graph/graph_template.hpp"
+/*
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, true);//weighted?
+   Graph<int> G(N, E, false, false);//directed? reverse?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+*/
+
+template<typename T>
+struct LowLink {
+    const Graph<T> &G;
+    vector<int> used, ord, low;
+    vector<int> aps;  // articulation points
+    vector<P> bridges;
+    vector<ll> bridgeIds;
+    LowLink(const Graph<T> &G_) : G(G_) {
+        used.assign(G.size(), 0);
+        ord.assign(G.size(), 0);
+        low.assign(G.size(), 0);
+        int k = 0;
+        for (int i = 0; i < (int)G.size(); i++) {
+            if (!used[i]) k = dfs(i, k, -1);
+        }
+        sort(aps.begin(), aps.end()); // 必要ならソートする
+        sort(bridges.begin(), bridges.end()); // 必要ならソートする
+        sort(ALL(bridgeIds));
+    }
+    int dfs(int id, int k, int par) { // id:探索中の頂点, k:dfsで何番目に探索するか, par:idの親
+        used[id] = true;
+        ord[id] = k++;
+        low[id] = ord[id];
+        bool is_aps = false;
+        int count = 0; // 子の数
+        for (auto &e : G[id]) {
+            if (!used[e.to]) {
+                count++;
+                k = dfs(e.to, k, id);
+                low[id] = min(low[id], low[e.to]);
+                if (par != -1 && ord[id] <= low[e.to]) is_aps = true; 
+                if (ord[id] < low[e.to]){
+                  bridges.emplace_back(min(id, e.to), max(id, e.to)); // 条件を満たすので橋
+                  bridgeIds.push_back(e.id);  
+                }
+            } else if (e.to != par) { // eが後退辺の時
+                low[id] = min(low[id], ord[e.to]);
+            }
+        }
+        if (par == -1 && count >= 2) is_aps = true; 
+        if (is_aps) aps.push_back(id);
+        return k;
+    }
+};
+
+#if __has_include(<atcoder/dsu>)
+#include <atcoder/dsu>
+using namespace atcoder;
+//dsu DSU(n);
+//DSU.merge(a,b);
+//if(DSU.same(a,b)){}
+#endif
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   ll A,B,C; cin>>A>>B>>C;
+   A--, B--, C--;
+   Edges<int> E = readE<int>(M, -1, false);//weighted?
+   Graph<int> G(N, E, false, false);//directed? reverse?
+
+   if(G[B].size()<=1) END(No)
+
+   LowLink link(G);
+
+   EL(link.bridgeIds)
+   EL(link.aps)
+
+   dsu uf(N);
+
+   for(const auto& e:E){
+      if(!binary_search(ALL(link.bridgeIds), e.id)){
+         uf.merge(e.from, e.to);
+      }
+      // if(!binary_search(ALL(link.aps), e.from) && !binary_search(ALL(link.aps), e.to)){
+      //    uf.merge(e.from, e.to);
+      // }
+   }
+
+   if(uf.same(A,B)&&uf.same(B,C)){
+      EL(0)
+      END(Yes)
+   }
+
+   // merge non related trees
+   for(const auto& e:E){
+      if(uf.same(e.from, e.to)) continue;
+
+      bool hasFrom = false;
+      hasFrom |= uf.same(e.from, A);
+      hasFrom |= uf.same(e.from, B);
+      hasFrom |= uf.same(e.from, C);
+
+      bool hasTo = false;
+      hasTo |= uf.same(e.to, A);
+      hasTo |= uf.same(e.to, B);
+      hasTo |= uf.same(e.to, C);
+
+      if(!(hasTo && hasFrom)){
+         uf.merge(e.from, e.to);
+         ES(e.from) EL(e.to)
+      }
+   }
+
+   // if(uf.same(A,B)&&uf.same(B,C)){
+   //    EL(1)
+   //    END(Yes)
+   // }
+
+   // here tree size should be 3
+   ll edgeAB = -1;
+   ll edgeBC = -1;
+   for(const auto& e:E){
+      if(uf.same(e.from, e.to)) continue;
+
+      if(uf.same(e.from, A) && uf.same(e.to, B)) edgeAB = e.id;
+      if(uf.same(e.from, B) && uf.same(e.to, A)) edgeAB = e.id;
+      if(uf.same(e.from, B) && uf.same(e.to, C)) edgeBC = e.id; 
+      if(uf.same(e.from, C) && uf.same(e.to, B)) edgeBC = e.id;
+
+      if(uf.same(e.from, A) && uf.same(e.to, C)) {
+         EL(2)
+         END(No)
+      }
+      if(uf.same(e.from, C) && uf.same(e.to, A)) {
+         EL(3)
+         END(No)
+      }
+
+   }
+
+
+   if(edgeAB != -1 && edgeBC!=-1 && edgeAB != edgeBC){
+      ES(edgeAB) EL(edgeBC)
+      EL(4)
+      END(Yes)
+   }
+
+   PL(No)
 
    return;
 }
@@ -92,3 +240,14 @@ int main() {
    for(int tt = 0; tt<TT; tt++) solve();
    return 0;
 }
+
+/*
+ABC318 5完
+A for
+B for for
+C sortして貪欲
+D bitDP
+E 各数字毎に考える．
+F ?
+G 最近見かけたlowlinkなるもので行けると思ったが...
+*/

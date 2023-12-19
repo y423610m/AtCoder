@@ -13,6 +13,22 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +92,33 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   string S; cin>> S;
+   ll N = S.size();
+
+   V<V<mint>> dp(N+1, V<mint>(N+1));//(がj個多いものの個数
+   dp[0][0] = 1;
+
+   rep(i,N){
+      if(S[i]=='('){
+         rep(j,N) dp[i+1][j+1] = dp[i][j];
+         dp[i+1][0] = 0;
+      }
+      else if(S[i]==')'){
+         rep(j,N) dp[i+1][j] = dp[i][j+1];
+         dp[i+1][N] = 0;
+      }
+      else{
+         // '('
+         rep(j,N) dp[i+1][j+1] += dp[i][j];
+         // ')'
+         rep(j,N) dp[i+1][j] += dp[i][j+1];
+      }
+   }
+   rep(i,N+1){
+      ES(i) EL(dp[i])
+   }
+
+   PL(dp[N][0])
 
    return;
 }

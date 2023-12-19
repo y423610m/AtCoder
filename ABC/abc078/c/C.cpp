@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,58 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+template<typename T = long long int >
+T POW(long long a, long long b, long long mod = 0){
+   T ret = 1;
+   T tmp = a;
+   if(mod) tmp%=mod;
+   while(b){
+     if(b&1){
+       ret *= tmp;
+       if(mod) ret%=mod;
+     }
+     b /= 2;
+     if(b) tmp *= tmp;
+     if(mod) tmp%=mod;
+   }
+   return ret;
+}
+// ll result = POW(5,3); ->125
+// POW<boost::mp::int128_t>(a,x,mod);
 
+vector<ll> digit(ll n, ll base=2, bool reverse_ = true){
+   assert(n>=0);
+   vector<ll> ret;
+   if(n==0){
+      ret.push_back(0);
+      return ret;
+   }
+   ll sig = 1;
+   ll d = abs(base);
+   while(n){
+      ret.push_back((n*sig)%d);
+      if(ret.back()<0) ret.back() += d;
+      n -= ret.back() * sig;
+      n /= d;
+      sig *= base / abs(base);
+   }
+   if(reverse_) reverse(ret.begin(), ret.end());
+   return ret;
+}
+/* 負の底ok.abc105 c beat参照
+digit(6, 2) = {1,1,0} = 4+2
+digit(6, 2, false) = {0,1,1} = 2 + 4  
+digit(6, -2) = {1,1,0,1,0} = 16 -8  - 2
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   ll n = POW(2, M);
+   ll ans = n * (1900 * M + 100 * (N-M));
+   PL(ans)
 
    return;
 }

@@ -76,7 +76,13 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   map<int, string> mp;
+   mp[2] = mp[4] = mp[5] = mp[7] = mp[9] = "hon";
+   mp[0] = mp[1] = mp[6] = mp[8] = "pon";
+   mp[3] = "bon";
+
+   PL(mp[N%10])
 
    return;
 }

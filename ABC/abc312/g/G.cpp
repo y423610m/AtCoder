@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,76 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include "graph/tree/rooted_tree.hpp"
+/*
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, false);//weighted?
+   Graph<int> G(N, E, false);//directed?
+   //Graph<int> G(N); G.read(M, -1, true, true);
 
+   RootedTree rt(N, G, 0);
 
-#define endl "\n"
+   EL(rt.depth)
+   EL(rt.parent)
+   EL(rt.numOfDescendants)
+   rep(i,N) EL(rt.children[i])
+   EL(rt.farestDescendant)
+   parent[root]=root
+   //Edgeは親->子が含まれていれば,有向でも無向でもOK
+*/
 
 void solve() {
 
+   ll N; cin>>N;
+   Edges<ll> E = readE<ll>(N-1, -1, false);//weighted?
+   Graph<ll> G(N, E, false);//directed?
    
+   ll s = 0;
+   ll c = LINF;
+   rep(i,N) if(c > G[i].size()){
+      c = G[i].size();
+      s = i;
+   }
+
+   RootedTree rt(N, G, s);
+   ll ans = 0;
+
+   EL(rt.numOfDescendants)
+
+   auto dfs = [&](auto dfs, int p, int par)->void {
+
+      for(const auto& e:G[p]) if(e.to!=par){
+         dfs(dfs, e.to, p);
+      }
+
+      EL(p)
+      ll sum = 0;
+      // sum += N-rt.numOfDescendants[p]-1;
+      for(const auto& e:G[p]) if(e.to!=par){
+         sum += rt.numOfDescendants[e.to]+1;
+      }
+      ES(sum)
+      ll cand = 0;
+      for(const auto& e:G[p]) if(e.to!=par){
+         sum -= rt.numOfDescendants[e.to]+1;
+         ES(N-1-rt.numOfDescendants[p])
+         ES(rt.numOfDescendants[e.to]+1)
+         EL(sum)
+         cand += (N-1-rt.numOfDescendants[p]) * (rt.numOfDescendants[e.to]+1) * (sum);
+      }
+      // if(par!=-1) cand += sum;
+      // cand += rt.numOfDescendants[p] * (sum - (N-rt.numOfDescendants[p]-1));
+      ans += cand;
+
+      ES(cand) EL(ans)
+   };
+
+
+
+   dfs(dfs, s, -1);
+
+
+   PL(ans)
 
    return;
 }

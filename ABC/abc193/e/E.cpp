@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,37 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+#include "atcoder/math"
+/*
+V<ll> R = {r1,r2,..};
+V<ll> M = {mod1. mod2,..};
+auto [ans, found] = atcoder::crt(R, M);
+found == lcm(M);
+ans + n*lcmは常に満たす
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll X,Y,P,Q;
+   cin>>X>>Y>>P>>Q;
+
+   V<ll> mods = {(X+Y)*2, P+Q};
+   V<ll> r;
+
+   // X<= t % (X+Y)*2 <= X+Y
+   // P<=  t % (P+Q) <=P+Q
+   ll ans = LINF;
+   for(ll r1=X;r1<X+Y;r1++){
+      for(ll r2=P;r2<P+Q;r2++){
+         r = {r1, r2};
+         auto [r, found] = atcoder::crt(r, mods);
+         if(found) chmin(ans, t);
+      }
+   }
+   if(ans==LINF) PL("infinity")
+   else PL(ans)
 
    return;
 }
@@ -88,7 +116,7 @@ int main() {
    // std::cout << std::setbase(16);//8進数表示.8,10,16のみ
    // stoll(s,nullptr,base);
    int TT = 1;
-   //cin>>TT;
+   cin>>TT;
    for(int tt = 0; tt<TT; tt++) solve();
    return 0;
 }

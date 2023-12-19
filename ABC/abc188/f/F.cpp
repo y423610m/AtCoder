@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,61 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+#include "utils/timer.hpp"
+//Timer timer;
+//if(timer.pass()) PL(timer.time())
+//TIMER_LOG(timer, "comment")
+//timer.print();
 
 #define endl "\n"
 
 void solve() {
 
+   Timer timer;
+
+   ll X,Y;
+   cin>>X>>Y;
+
+   unordered_map<ll,ll> mp;
+   mp.reserve(10000000);
    
+   ll ans = LINF;
+   mp[Y] = 0;
+   queue<Pll> que;
+   que.push({Y,0});
+   chmin(ans, abs(Y-X));
+   mp[Y] = 0;
+
+   while(!que.empty()){
+      auto [y, n] = que.front(); que.pop();
+      if(mp[y]<n) continue;
+      if(n>=ans) continue;
+      if(n > 90) break;
+      if(y<X){
+         chmin(ans, mp[y] + abs(X-y));
+         continue;
+      }
+      if(y%2==0 && y>X){
+         ll ny = y/2;
+         if(!mp.contains(ny) || mp[ny] > n+1){
+            mp[ny] = n+1;
+            que.push({ny, n+1});
+            chmin(ans, n+1+abs(X-ny));
+         }
+      }
+      rep(i,2){
+         ll ny = i? y+1: y-1;
+         if(!mp.contains(ny) || mp[ny] > n+1){
+            mp[ny] = n+1;
+            que.push({ny, n+1});
+            chmin(ans, n+1+abs(X-ny));  
+         }
+      }
+
+      if(timer.pass(1600)) break;
+   }
+
+   PL(ans)
 
    return;
 }

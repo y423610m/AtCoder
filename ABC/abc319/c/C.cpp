@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,89 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   V<V<ll>> C(3, V<ll>(3)); cin>>C;
+
+   V<V<bool>> used(3, V<bool>(3, false));
+
+   auto check = [&](int x, int y)-> bool {
+      {
+         //tate
+         ll cnt = 0;
+         map<ll,ll> mp;
+         rep(i,3) if(used[i][y]){
+            mp[C[i][y]]++;
+            cnt++;
+         }
+         if(cnt==2 && mp.size()==1){
+            if(mp[C[x][y]]!=2) return false;
+         }
+      }
+
+      {
+         //yoko
+         ll cnt = 0;
+         map<ll,ll> mp;
+         rep(j,3) if(used[x][j]){
+            mp[C[x][j]]++;
+            cnt++;
+         }
+         if(cnt==2 && mp.size()==1){
+            if(mp[C[x][y]]!=2) return false;
+         }
+      }
+
+      if(x==y){
+         //naname
+         ll xy = x+y;
+         ll cnt = 0;
+         map<ll,ll> mp;
+         rep(i,3){
+            if(used[i][i]){
+               mp[C[i][i]]++;
+               cnt++;
+            }
+            if(cnt==2 && mp.size()==1){
+               if(mp[C[x][y]]!=2) return false;
+            }
+         }
+      }
+      if(x+y==2){
+         //naname
+         ll xy = x+y;
+         ll cnt = 0;
+         map<ll,ll> mp;
+         rep(i,3){
+            ll j = 2 - i;
+            if(used[i][j]){
+               mp[C[i][j]]++;
+               cnt++;
+            }
+            if(cnt==2 && mp.size()==1){
+               if(mp[C[x][y]]!=2) return false;
+            }
+         }
+      }
+      return true;
+   };
+
+   ld ans = 0;
+   auto dfs = [&](auto dfs, int n)-> void {
+      if(n==9){
+         ans += 1;
+         return;
+      }
+      rep(i,3) rep(j,3) if(!used[i][j]){
+         if(check(i,j)){
+            used[i][j] = true;
+            dfs(dfs, n+1);
+            used[i][j] = false;
+         }
+      }
+   };
+
+   dfs(dfs, 0);
+   for(ll i=1;i<=9;i++) ans /= i;
+   PL(ans)
 
    return;
 }

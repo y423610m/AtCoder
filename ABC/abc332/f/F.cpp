@@ -13,6 +13,21 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -54,6 +69,12 @@ template<typename T, typename U> void operator--(pair<T, U>& p, int){p.first--, 
 template<typename T, typename U> void operator++(pair<T, U>& p){p.first++, p.second++;}//pre
 template<typename T, typename U> void operator++(pair<T, U>& p, int){p.first++, p.second++;}//post
 template<class T,class U> struct std::hash<std::pair<T,U>>{size_t operator()(const std::pair<T,U> &p) const noexcept {return (std::hash<T>()(p.first)+1) ^ (std::hash<U>()(p.second)>>2);}};
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type print_tuple(std::ostream&, const std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type print_tuple(std::ostream& os, const std::tuple<T...>& tup){if (n != 0){os << " ";} os << std::get<n>(tup); print_tuple<n+1>(os, tup);}
+template <typename... T> std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {print_tuple<0>(os, tup); return os;}
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>& tup){is>> std::get<n>(tup); input_tuple<n+1>(is, tup);}
+template <typename... T> std::istream& operator>>(std::istream& is, std::tuple<T...>& tup) {input_tuple<0>(is, tup); return is;}
 template<typename T, unsigned long int sz> ostream &operator<<(ostream &os, const array< T , sz > &v) {for(int i = 0; i < sz; i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
 template<typename T, unsigned long int sz> istream &operator>>(istream &is, array< T , sz > &v) {for(T& in:v){cin>>in;} return is;}
 template<typename T, unsigned long int sz> void operator--(array< T , sz > &A){for(auto& a:A){a--;}}//pre
@@ -70,13 +91,81 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#if __has_include(<atcoder/lazysegtree>)
+#include <atcoder/lazysegtree>
+using namespace atcoder;
+#endif
 
+namespace Lazy{
+   template<typename T>
+   struct S{
+      T x;
+      ll size=1;
+   };
+
+   template<typename T>
+   struct F{
+      T a,b;
+   };
+
+   template<typename T> S<T> opSum(S<T> l, S<T> r){return S<T>{l.x+r.x, l.size+r.size};}
+   template<typename T> S<T> opMax(S<T> l, S<T> r){return (l.x>=r.x?l:r);}
+   template<typename T> S<T> opMin(S<T> l, S<T> r){return (l.x<=r.x?l:r);}
+
+   template<typename T> S<T> e0(){return S<T>{0, 1};}
+   template<typename T> S<T> eLINF(){return S<T>{LINF, 1};}
+   template<typename T> S<T> e_LINF(){return S<T>{-LINF, 1};}
+
+   template<typename T>
+   S<T> FS(F<T> f, S<T> s){
+      return S<T>{f.a*s.x+f.b*s.size, s.size};//ax+b
+   }
+
+   template<typename U=ll>
+   F<U> FF(F<U> l, F<U> r){
+      return F<U>{l.a*r.a, l.a*r.b+l.b};
+   }
+
+   template<typename U=ll>
+   F<U> f0(){
+      return F<U>{1,0};
+   }
+   template<typename T=ll> using LazyRSQ = lazy_segtree<S<T>, opSum<T>, e0<T>,     F<T>, FS<T>, FF<T>, f0<T>>;
+   template<typename T=ll> using LazyRMQ = lazy_segtree<S<T>, opMax<T>, e_LINF<T>, F<T>, FS<T>, FF<T>, f0<T>>;
+   template<typename T=ll> using LazyRmQ = lazy_segtree<S<T>, opMin<T>, eLINF<T>,  F<T>, FS<T>, FF<T>, f0<T>>;
+   /*
+   ll N,Q; cin>>N>>Q;
+   V<ll> A(N); cin>>A;
+   Lazy::LazyRSQ<mint> tree(N);
+   rep(i,N) tree.set(i, {A[i],1});// {x, size}
+
+   tree.apply(l,r,LS::F<mint>{a,b});//ax+b
+   cout<<tree.prod(l,r).x<<endl;
+   */
+}
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   V<ll> A(N); cin>>A;
+
+   Lazy::LazyRSQ<mint> seg(N);
+   rep(i,N) seg.set(i, {A[i], 1});
+
+   rep(m,M){
+      ll L,R;
+      cin>>L>>R;
+      L--;
+      ll x; cin>>x;
+      ll n = R-L;
+      ES(L) ES(R) EL(n) 
+      seg.apply(L, R, Lazy::F<mint>{mint(n-1)/n, mint(x)/n});
+   }
+
+   rep(i,N) PS(seg.prod(i, i+1).x)
+   PL("")
 
    return;
 }

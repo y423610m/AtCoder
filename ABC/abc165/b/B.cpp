@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,88 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include <boost/multiprecision/cpp_int.hpp>
+namespace mp = boost::multiprecision;
+/*
+    //メモリの許す限り無限
+    mp::cpp_int x = 1;
+    mp::int128_t 1e36
+    mp::int256_t 1e70
+    mp::int512_t 1e150
+    mp::int1024_t 1e300
 
+    文字列->整数
+    cpp_int x("123");
+    x.assign("123");
+
+    整数->文字列
+    string s = x.str();
+    x.str(0, std::ios_base::oct,hex,)
+
+    劣型変換
+    int128_t i128 = static_cast<int128_t>(i256)
+*/
+
+#include <boost/multiprecision/cpp_dec_float.hpp>
+namespace mp = boost::multiprecision;
+/*
+https://boostjp.github.io/tips/multiprec-float.html
+    mp::cpp_dec_float_100 a,b;
+
+    cpp_dec_float_50 x;
+    cpp_dec_float_100 y;
+
+    //ユーザー定義．桁数が1000桁で指数部が64bitで表される型
+    typedef mp::number<mp::cpp_dec_float<1000, std::int64_t> > cpp_dec_float_1000_64exp;
+
+    -----OpenGMPによる多倍長------
+    #include <boost/multiprecision/gmp.hpp>
+    mpf_float_50
+    mpf_float_100
+    mpf_float_500
+    mpf_float_1000
+    mpf_float
+
+    -----小数->文字列
+    cpp_dec_float_50 x = 3.14;
+    x.str();
+
+    -----文字列->小数
+    cpp_dec_float_100 x("3.14");// char配列から変換
+    cpp_dec_float_100 y(std::string("3.14"));
+    x.assign("3.14");
+
+    -----劣精度変換.優精度なら暗黙変換
+    cpp_dec_float_50 f50 = static_cast<cpp_dec_float_50>(cpp_dec_float_100(3.14));
+ABC169C
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   // mp::cpp_dec_float_100 X; cin>>X;
+   // mp::cpp_dec_float_100 A = 100;
+   ll X; cin>>X;
+   lll A = 100;
+   ll ans = 0;
+   while(A<X){
+      ans++;
+      A *= 101;
+      A /= 100;
+      //A = mp::floor(A*1.01);
+   }
+   PL(ans)
+
+   // ll X; cin>>X;
+   // ll ans = 0;
+   // ll A = 100;
+   // while(A<X){
+   //    ans++;
+   //    A = A + A/100;
+   // }
+
+   // PL(ans)
 
    return;
 }

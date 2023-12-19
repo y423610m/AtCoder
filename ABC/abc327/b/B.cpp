@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,41 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+template<typename T = long long int >
+T POW(long long a, long long b, long long mod = 0){
+   T ret = 1;
+   T tmp = a;
+   if(mod) tmp%=mod;
+   while(b){
+     if(b&1){
+       ret *= tmp;
+       if(mod) ret%=mod;
+     }
+     b /= 2;
+     if(b) tmp *= tmp;
+     if(mod) tmp%=mod;
+   }
+   return ret;
+}
+// ll result = POW(5,3); ->125
+// POW<boost::mp::int128_t>(a,x,mod);
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll B; cin>>B;
+
+   ll x = 1;
+   while(1){
+      if(pow(x, x)>B+10) break;
+
+      if(POW(x, x)==B) END(x)
+
+      x++;
+   }
+
+   PL(-1)
 
    return;
 }

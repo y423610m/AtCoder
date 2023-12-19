@@ -70,13 +70,84 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+template<typename T = long long int >
+T POW(long long a, long long b, long long mod = 0){
+   T ret = 1;
+   T tmp = a;
+   if(mod) tmp%=mod;
+   while(b){
+     if(b&1){
+       ret *= tmp;
+       if(mod) ret%=mod;
+     }
+     b /= 2;
+     if(b) tmp *= tmp;
+     if(mod) tmp%=mod;
+   }
+   return ret;
+}
+// ll result = POW(5,3); ->125
+// POW<boost::mp::int128_t>(a,x,mod);
 
+vector<long long> digit0(long long a, int b=2, bool reverse_ = true){
+    vector<long long> ret;
+    while(a){
+        ret.push_back(a%b);
+        a/=b;
+    }
+    if(reverse_) reverse(ret.begin(), ret.end());
+    return ret;
+}
+// vector<ll> dgt10 = digit(100,10) -> {1,0,0}
+// vector<ll> dgt10 = digit(100,10,false) -> {0,0,1}
+// vector<ll> dgt2 = digit(100,2) -> {1,1,0,0,1,0,0}
+
+vector<int> digit(ll n, ll base=2, bool reverse = true){
+   assert(n>=0);
+   vector<int> ret;
+   if(n==0){
+      ret.push_back(0);
+      return ret;
+   }
+   ll sig = 1;
+   ll d = abs(base);
+   while(n){
+      ret.push_back((n*sig)%d);
+      if(ret.back()<0) ret.back() += d;
+      n -= ret.back() * sig;
+      n /= d;
+      sig *= base / abs(base);
+   }
+   if(reverse) reverse(ret.begin(), ret.end());
+   return ret;
+}
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   ll base; cin>>base;
+   if(N==0) END(0)
+
+   V<ll> ans;
+   ll sig = 1;
+   ll d = abs(base);
+   while(N){
+      ans.push_back((N*sig)%d);
+      if(ans.back()<0) ans.back() += d;
+      N -= ans.back() * sig;
+      N /= d;
+      sig *= base / abs(base);
+   }
+   ll test = 0;
+   reverse(ALL(ans));
+   rep(i,ans.size()){
+      cout<<ans[i];
+      test += POW(base, ans.size() -i -1) * ans[i];
+   }
+   PL("")
+   EL(test)
 
    return;
 }

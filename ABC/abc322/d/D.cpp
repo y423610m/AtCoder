@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,75 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+void Rotate(vector<Pll>& input){
+   ll mx = LINF;
+   ll my = LINF;
+   for(auto& [x,y]:input){
+      int x_ = -y;
+      int y_ = x;
+      x = x_;
+      y = y_;
+      chmin(mx, x);
+      chmin(my, y);
+   }
+   for(auto& [x,y]:input){
+      x -= mx;
+      y -= my;
+   }
+}
 
 #define endl "\n"
 
 void solve() {
 
-   
+   V<V<string>> P(3, V<string>(4)); cin>>P;
+   V<V<Pll>> Ps(3);
+
+   rep(i,3){
+      rep(j,4){
+         rep(k,4){
+            if(P[i][j][k]=='#'){
+               Ps[i].push_back({j,k});
+            }
+         }
+      }
+   }
+
+   if(Ps[0].size()+Ps[1].size()+Ps[2].size()!=16) END(No)
+
+   V<V<bool>> grid(4, V<bool>(4));
+   string ans = No;
+   auto dfs = [&](auto dfs, int i)->void {
+      if(i==3){
+         ans = Yes;
+         return;
+      }
+
+      rep(r,4){
+         Rotate(Ps[i]);
+         rep(h,4) rep(w,4){
+            bool ok = true;
+            for(auto [x,y]:Ps[i]){
+               if(h+x<0 || 4<=h+x) ok = false;
+               if(w+y<0 || 4<=w+y) ok = false;
+               if(!ok) break;
+               if(grid[h+x][w+y]) ok = false;
+               if(!ok) break;
+            }
+            if(ok){
+               for(auto [x,y]:Ps[i]) grid[h+x][w+y] = true;
+               dfs(dfs, i+1);
+               for(auto [x,y]:Ps[i]) grid[h+x][w+y] = false;
+            }
+         }
+      }
+   };
+
+   dfs(dfs, 0);
+
+   PL(ans)
+
+
 
    return;
 }

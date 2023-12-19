@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,88 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+void solve3(){
+   ll N,P; cin>>N>>P;
+   string S; cin>>S;
 
+
+   if(P==2 or P==5){
+      ll ans = 0;
+      rep(i,N) if((S[i]-'0')%P==0) ans += i+1;
+      PL(ans)
+   }
+   else{
+      reverse(ALL(S));
+      V<ll> dp(P);
+      dp[0]++;
+
+      ll d = 1;
+      ll p = 0;
+      ll ans = 0;
+      rep(i,N){
+         ll s = S[i]-'0';
+
+         p = p + s * d;
+         p %= P;
+
+         ans += dp[p];
+         dp[p]++;
+
+         d *= 10;
+         d %= P;
+      }
+      PL(ans)
+   }
+}
+
+#include "math/fps.hpp"
+using FPS = FormalPowerSeries<ll>;
+using SFPS = V<pair<int, ll>>;
 
 #define endl "\n"
 
+void solve2() {
+
+   ll N,P; cin>>N>>P;
+   string S; cin>>S;
+
+   FPS fps(P);
+
+   ll ans = 0;
+   rep(i,N){
+      ll d = S[i]-'0';
+      SFPS g = {{1,1}, {d%P, 1}};
+      SFPS h = {{1,1}, {d%P, 1}};
+      fps *= g;
+      fps *= h;
+
+   }
+   PL(ans)
+
+   return;
+}
+
 void solve() {
 
-   
+   ll N,P; cin>>N>>P;
+   string S; cin>>S;
+
+   V<ll> dp(P);
+   V<ll> nxt(P);
+   // dp[0] = 1;
+
+   ll ans = 0;
+   rep(i,N){
+      nxt.assign(P, 0);
+      // nxt = dp;
+      ll d = S[i]-'0';
+      nxt[d%P]++;
+      rep(j,P) if(dp[j]) nxt[(j*10+d)%P] += dp[j];
+      swap(dp, nxt);
+      ans += dp[0];
+      ES(i) EL(dp)
+   }
+   PL(ans)
 
    return;
 }
@@ -89,6 +168,6 @@ int main() {
    // stoll(s,nullptr,base);
    int TT = 1;
    //cin>>TT;
-   for(int tt = 0; tt<TT; tt++) solve();
+   for(int tt = 0; tt<TT; tt++) solve3();
    return 0;
 }

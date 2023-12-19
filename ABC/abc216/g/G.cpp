@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,62 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#if __has_include(<atcoder/segtree>)
+#include <atcoder/segtree>
+using namespace atcoder;
+template<typename T> T opMax(T a, T b){return max(a,b);}
+template<typename T> T opMin(T a, T b){return min(a,b);}
+template<typename T> T opSum(T a, T b){return a+b;}
+template<typename T> T e0(){return T(0);}
+template<typename T> T e_LINF(){return -LINF;}
+template<typename T> T eLINF(){return LINF;}
 
+template<typename T=ll> using RMQ = segtree<T, opMax<T>, e_LINF<T>>;//Range Max Query
+template<typename T=ll> using RmQ = segtree<T, opMin<T>, eLINF<T>>;// RmQ tree(vec); tree.prod(l,r)
+template<typename T=ll> using RSQ = segtree<T, opSum<T>, e0<T>>;
+
+ll seg_target;
+bool f(ll vi){return vi<seg_target;}//seg.max_right<f>(x-1)
+bool f2(ll vi){return vi>=seg_target;}//seg.max_right<f>(x-1)
+//max_right<f>(l):=>[l:N)でfを満たす右端．
+//min_left<f>(r):=>[0:r)でfを満たす左端．
+//f(e)=trueでなければならない
+//RMQ<ll> tree(N);
+//tree.set(i,0);
+//tree.get(i);
+//tree.prod(l,r);//半開区間
+#endif
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   V<Ar<ll,3>> LRX(M); cin>>LRX;
+
+   sort(ALL(LRX), [&](auto& a, auto& b){
+      if(a[1]!=b[1]) return a[1]<b[1];
+      return a[0] < b[0];
+   });
+
+   V<ll> que;
+   RSQ<ll> seg(N);
+   ll r = 0;
+   for(auto [L, R, X]:LRX){
+      while(r<R){
+         que.push_back(r);
+         r++;
+      }
+      L--;
+      ll n = max(0LL, X-seg.prod(L,R));
+      rep(i,n){
+         seg.set(que.back(), 1);
+         que.pop_back();
+      }
+   }
+
+   rep(i,N) PS(seg.get(i));
+   PL("")
 
    return;
 }

@@ -13,6 +13,22 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+// using mint = double;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +92,82 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
+   ll N,X; cin>>N>>X;
+   V<ll> T(N); cin>>T;
+
+   //dp[i][j]:=i秒後に曲jが始まる際に，時刻tで曲１が流れている可能性
+   V<V<mint>> dp(X+1, V<mint>(N));
+   V<V<bool>> done(X+1, V<bool>(N));
+
+   mint invN = mint(1) / N;
+
+   auto dfs = [&](auto dfs, ll t, ll nxt)->void {
+      mint sum = 0;
+      rep(i,N){
+         if(t+T[nxt]>X) {
+            sum += nxt == 0;
+         }
+         else{
+            if(!done[t+T[nxt]][i]){
+               dfs(dfs, t+T[nxt], i);
+               done[t+T[nxt]][i] = true;
+            }
+            sum += dp[t+T[nxt]][i];
+         }
+      }
+      dp[t][nxt] = sum * invN;
+   };
+   rep(i,N){
+      dfs(dfs, 0, i);
+   }
    
+   // rep(i,X+1) EL(dp[i])
+
+   mint ans = 0;
+   rep(i,N) ans += dp[0][i];
+   ans *= invN;
+   PL(ans)
+
+   return;
+}
+
+void solve2() {
+
+   ll N,X; cin>>N>>X;
+   V<ll> T(N); cin>>T;
+
+   //dp[i][j]:=i秒後に曲jが始まる際に，時刻tで曲１が流れている可能性
+   V<mint> dp(X+1);
+   V<bool> done(X+1);
+
+   mint invN = mint(1) / N;
+
+   auto dfs = [&](auto dfs, ll t)->void {
+      mint sum = 0;
+      rep(i,N){
+         if(t+T[i]>X) {
+            sum += i == 0;
+         }
+         else{
+            if(!done[t+T[i]]){
+               dfs(dfs, t+T[i]);
+               done[t+T[i]] = true;
+            }
+            sum += dp[t+T[i]];
+         }
+      }
+      dp[t] = sum * invN;
+   };
+   rep(i,N){
+      dfs(dfs, 0);
+   }
+   
+   // rep(i,X+1) EL(dp[i])
+
+   mint ans = 0;
+   ans += dp[0];
+   // ans *= invN;
+   PL(ans)
 
    return;
 }
@@ -89,6 +180,6 @@ int main() {
    // stoll(s,nullptr,base);
    int TT = 1;
    //cin>>TT;
-   for(int tt = 0; tt<TT; tt++) solve();
+   for(int tt = 0; tt<TT; tt++) solve2();
    return 0;
 }

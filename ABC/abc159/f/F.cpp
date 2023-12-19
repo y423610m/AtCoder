@@ -13,6 +13,21 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,15 +85,65 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+#if __has_include(<atcoder/convolution>)
+#include <atcoder/convolution>
+using namespace atcoder;
+/*
+V<int> A(n), B(m);
+auto C = atcoder::convolution<MOD>(A, B);
+*/
+#endif
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   ll S; cin>>S;
+
+   V<ll> A(N); cin>>A;
+
+   V<ll> fps(S+1, 0);
+   // fps[0] = 1;
+   V<ll> B(S+1);
+   B[0] = 1;
+
+   EL(fps)
+   mint ans = 0;
+   rep(i,N){
+      if(A[i]<=S) B[A[i]]++;
+      fps[0]++;
+      fps = atcoder::convolution<MOD>(fps, B);
+      if(A[i]<=S) B[A[i]]--;
+      EL(fps)
+      ans += fps[S];
+   }
+
+   // PL(fps[S])
+   PL(ans)
 
    return;
+}
+
+void solve2(){
+   ll N,S; cin>>N>>S;
+   V<ll> A(N); cin>>A;
+   //dp[i][j]:=iまで選んでjである組み合わせ
+   V<V<mint>> dp(N+1, V<mint>(S+1));
+   // dp[0][0] = 1;
+   mint ans = 0;
+   rep(i,N){
+      dp[i][0]++;
+      dp[i+1] = dp[i];
+      rep(j,S){
+         if(j+A[i]>S) break;
+         dp[i+1][j+A[i]] += dp[i][j];
+      }
+      // dp[i+1][0]++;
+      ans += dp[i+1][S];
+   }
+
+   PL(ans)
 }
 
 int main() {
@@ -89,6 +154,6 @@ int main() {
    // stoll(s,nullptr,base);
    int TT = 1;
    //cin>>TT;
-   for(int tt = 0; tt<TT; tt++) solve();
+   for(int tt = 0; tt<TT; tt++) solve2();
    return 0;
 }

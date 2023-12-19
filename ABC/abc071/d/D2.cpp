@@ -13,6 +13,21 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -54,6 +69,12 @@ template<typename T, typename U> void operator--(pair<T, U>& p, int){p.first--, 
 template<typename T, typename U> void operator++(pair<T, U>& p){p.first++, p.second++;}//pre
 template<typename T, typename U> void operator++(pair<T, U>& p, int){p.first++, p.second++;}//post
 template<class T,class U> struct std::hash<std::pair<T,U>>{size_t operator()(const std::pair<T,U> &p) const noexcept {return (std::hash<T>()(p.first)+1) ^ (std::hash<U>()(p.second)>>2);}};
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type print_tuple(std::ostream&, const std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type print_tuple(std::ostream& os, const std::tuple<T...>& tup){if (n != 0){os << " ";} os << std::get<n>(tup); print_tuple<n+1>(os, tup);}
+template <typename... T> std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {print_tuple<0>(os, tup); return os;}
+template <size_t n, typename... T> typename std::enable_if<(n >= sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>&){}
+template <size_t n, typename... T> typename std::enable_if<(n < sizeof...(T))>::type input_tuple(std::istream& is, std::tuple<T...>& tup){is>> std::get<n>(tup); input_tuple<n+1>(is, tup);}
+template <typename... T> std::istream& operator>>(std::istream& is, std::tuple<T...>& tup) {input_tuple<0>(is, tup); return is;}
 template<typename T, unsigned long int sz> ostream &operator<<(ostream &os, const array< T , sz > &v) {for(int i = 0; i < sz; i++) {os << v[i] << (i + 1 != (int) v.size() ? " " : "");}return os;}
 template<typename T, unsigned long int sz> istream &operator>>(istream &is, array< T , sz > &v) {for(T& in:v){cin>>in;} return is;}
 template<typename T, unsigned long int sz> void operator--(array< T , sz > &A){for(auto& a:A){a--;}}//pre
@@ -70,13 +91,93 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#if __has_include(<atcoder/dsu>)
+#include <atcoder/dsu>
+using namespace atcoder;
+//dsu DSU(n);
+//DSU.merge(a,b);
+//if(DSU.same(a,b)){}
+#endif
 
+#include "graph/graph_template.hpp"
+/*
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, true);//weighted?
+   Graph<int> G(N, E, false, false);//directed? reverse?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll W; cin>>W;
+   ll H = 2;
+   V<string> S(2); cin>>S;
+
+//DRUL  SENW
+int dx[4] = {1, -1, 0, 0};
+int dy[4] = {0, 0, -1, 1};
+
+auto inGrid = [&](int nx, int ny){
+    if(0<=nx&&nx<H&&0<=ny&&ny<W) return true;
+    return false;
+};
+   dsu uf(H*W);
+   rep(h,H) rep(w,W) rep(d,4){
+      ll nx = h+dx[d];
+      ll ny = w+dy[d];
+      if(inGrid(nx, ny)&&S[h][w]==S[nx][ny]){
+         uf.merge(h*W+w, nx*W+ny);
+      }
+   }
+
+   V<ll> id(H*W);
+   for(ll cnt=0; auto group:uf.groups()){
+      id[group[0]] = cnt;
+      id[group[1]] = cnt;
+      cnt++;
+   }
+
+   V<V<bool>> connected(W, V<bool>(W));
+   rep(w,W) connected[w][w] = true;
+
+   Edges<ll> E;
+   rep(h,H) rep(w,W) rep(d,4){
+      ll nx = h+dx[d];
+      ll ny = w+dy[d];
+      if(inGrid(nx, ny)&&S[h][w]!=S[nx][ny]){
+         if(!connected[id[h*W+w]][id[nx*W+ny]]){
+            E.push_back({id[h*W+w], id[nx*W+ny]});
+            connected[id[h*W+w]][id[nx*W+ny]] = true;
+            connected[id[nx*W+ny]][id[h*W+w]] = true;
+         }
+      }
+   }
+
+   Graph<ll> G(W, E, false, false);//directed? reverse?
+
+   V<bool> visited(W);
+   mint ans = 1;
+   auto dfs = [&](auto dfs, int p)->void {
+      visited[p] = true;
+      ll tmp = 0;
+      for(const auto& e:G[p]){
+         if(visited[e.to]){
+            tmp++;
+         }
+      }
+      ans *= (3-tmp);
+      ES(p) ES(tmp) EL(ans)
+      for(const auto& e:G[p]){
+         if(!visited[e.to]){
+            dfs(dfs, e.to);
+         }
+      }
+   };
+   dfs(dfs, 0);
+
+   PL(ans)
 
    return;
 }

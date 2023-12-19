@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,52 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   V<ll> A(N); cin>>A;
+   if(N%2==0) A.push_back(-LINF);
+
+   // N is always odd
+
+   ll ans = -LINF;
+   rep(t,2){
+      V<ll> B = A;
+      ll b = B.back();
+      B.pop_back();
+      
+      // reverse(ALL(B));
+
+      ll cand = -LINF;
+      ll M = N/2;
+      V<ll> dp(N, -LINF);
+      rep(i,M){
+         if(i==0){
+            if(t==0) dp[0] = B[0];
+            else dp[1] = B[1];
+         }
+         else{
+            // chmax(dp[2*i], dp[2*i-2]);
+            // if(2*i-chmax(dp[2*i], dp[2*i-2]+B[2*i]);
+            chmax(dp[2*i], dp[2*i-2]+B[2*i]);
+            chmax(dp[2*i+1], dp[2*i-2]+B[2*i+1]);
+            chmax(dp[2*i+1], dp[2*i-1]+B[2*i+1]);
+         }
+      }
+
+      if(N&1){
+         chmax(cand, dp[N-1]);
+         chmax(cand, dp[N-2]);
+         chmax(cand, dp[N-2]+b);
+      }
+      else{
+         chmax(cand, dp[N-1]);
+         chmax(cand, dp[N-2]);
+      }
+      chmax(ans,cand);
+      EL(dp)
+
+      if(N%2==0) break;
+   }
+   PL(ans)
 
    return;
 }

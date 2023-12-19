@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,35 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   V<ld> P(N); cin>>P;
+
+   // dp[i][j]:=i回目までにj回参加したmax，
+   V<V<ld>> dp(N+1, V<ld>(N+1, -numeric_limits<ld>::max()));
+   dp[0][0] = 0;
+
+   rep(i,N){
+      dp[i+1] = dp[i];
+      rep(j,N){
+         ld nr = dp[i][j] * ld(0.9);
+         nr += P[i];
+         chmax(dp[i+1][j+1], nr);
+      }
+      EL(dp[i+1])
+   }
+
+   V<ld> div(2, ld(1));
+   rep(i,N+1) div.push_back(div.back() + powl(ld(0.9), ld(i)+1));
+   EL(div)
+
+   ld ans = -numeric_limits<ld>::max();
+   repi(i,1,N+1){
+      repi(j,1,N+1){
+         chmax(ans, ld(dp[i][j]/div[j]-ld(1200)/sqrtl(j)));
+      }
+   }
+
+   PL(ans)
 
    return;
 }

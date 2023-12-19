@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,76 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include "graph/graph_template.hpp"
+/*
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, true);//weighted?
+   Graph<int> G(N, E, false, false);//directed? reverse?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+*/
 
+struct Cost{
+   int from, to;
+   ll a,b;
+};
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,O,S; cin>>N>>O>>S;
+
+   V<V<Cost>> G(N);
+   rep(i,O){
+      ll u,v,a,b;
+      cin>>u>>v>>a>>b;
+      u--, v--;
+      G[u].push_back({u,v,a,b});
+      G[v].push_back({v,u,a,b});
+   }
+
+   V<ll> C(N), D(N);
+   rep(i,N){
+      cin>>C[i]>>D[i];
+   }
+
+   ll M = 50*N;
+   chmin(S, M);
+   //dp[i][j]:=iにいて，銀貨j枚持っているときの最短時間
+   V<V<ll>> dp(N, V<ll>(M+1, LINF));
+   dp[0][S] = 0;
+   V<bool> updated(N, false);
+   updated[0] = true;
+   while(1){
+      bool found = false;
+      ll p=-1;
+      rep(i,N) if(updated[i]){
+         updated[i] = false;
+         p = i;
+         break;
+      }
+      if(p==-1) break;
+      rep(i,M){
+         if(i+C[p]<=M) chmin(dp[p][i+C[p]], dp[p][i]+D[p]);
+         else break;
+      }
+
+      for(const auto& e:G[p]){
+         rep(i,M+1){
+            if(i-e.a>=0 && dp[e.to][i-e.a] > dp[p][i] + e.b){
+               dp[e.to][i-e.a] = dp[p][i] + e.b;
+               updated[e.to] = true;
+            }
+         }
+      }
+   }
+
+   V<ll> ans(N, LINF);
+   rep(i,N){
+      rep(j,M+1) chmin(ans[i], dp[i][j]);
+   }
+
+   repi(i,1,N) PL(ans[i])
 
    return;
 }

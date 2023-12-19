@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -72,11 +76,69 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 
 
+
 #define endl "\n"
 
 void solve() {
 
-   
+   ll H,W; cin>>H>>W;
+   V<string> A(H); cin>>A;
+
+   auto inGrid = [&](int nx, int ny){
+      if(0<=nx&&nx<H&&0<=ny&&ny<W) return true;
+      return false;
+   };
+
+   V<V<bool>> seen(H, V<bool>(W, false));
+
+   rep(h,H) rep(w,W){
+      ll dx = 100, dy = -1;
+      if(A[h][w]=='>') dx = 0, dy = 1;
+      if(A[h][w]=='<') dx = 0, dy = -1;
+      if(A[h][w]=='v') dx = 1, dy = 0;
+      if(A[h][w]=='^') dx = -1, dy = 0;
+      if(dx == 100) continue;
+
+      A[h][w] = '#';
+
+      ll nx = h+dx;
+      ll ny = w+dy;
+      while(inGrid(nx, ny) && (A[nx][ny]=='.') ){
+         seen[nx][ny] = true;
+         nx += dx;
+         ny += dy;
+      }
+   }
+
+   ll sx=0, sy=0;
+   rep(h,H) rep(w,W) if(A[h][w]=='S'){sx=h, sy=w;}
+
+   V<V<ll>> dist(H, V<ll>(W, LINF));
+   dist[sx][sy] = 0;
+   queue<Pll> que;
+   que.push({sx, sy});
+
+   //DRUL  SENW
+   int dx[4] = {1, 0, -1, 0};
+   int dy[4] = {0, 1, 0, -1};
+
+   while(!que.empty()){
+      auto [x,y] = que.front(); que.pop();
+      rep(d,4){
+         ll nx = x+dx[d];
+         ll ny = y+dy[d];
+         if(inGrid(nx, ny) && A[nx][ny]!='#' && !seen[nx][ny]){
+            if(dist[nx][ny] > dist[x][y]+1){
+               dist[nx][ny] = dist[x][y]+1;
+               que.push({nx, ny});
+               if(A[nx][ny]=='G') END(dist[nx][ny])
+
+            }
+         }
+      }
+   }
+
+   PL(-1)
 
    return;
 }

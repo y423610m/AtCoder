@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,14 +74,48 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+//1の数
+//__builtin_popcount()
+//__builtin_popcountll()
+//下から初めて1が現れる場所(1-indexed)
+//__builtin_ffs()
+//__builtin_ffsll()
+//先頭に何個0があるか
+//__builtin_clz()
+//__builtin_clzll()
+//末尾に何個0があるか
+//__builtin_ctz()
+//__builtin_ctzll()
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   V<V<ll>> F(N, V<ll>(10)); cin>>F;
 
+   V<V<ll>> P(N, V<ll>(11)); cin>>P;
+   rep(i,N) EL(F[i])
+   rep(i,N) EL(P[i])
+
+   ll ans = -LINF;
+   repi(mask,1,1<<10){
+      ll cand = 0;
+      rep(i,N){
+         ll cnt = 0;
+         rep(j,10) if(mask&(1<<j)) cnt += F[i][j];
+         cand += P[i][cnt];
+         if(__builtin_popcountll(mask)==1){
+            ES(mask)
+            ES(cand)
+            ES(P[i][cnt])
+            EL(cnt)
+         }
+      }
+      if(cand==0) EL(mask)
+      chmax(ans, cand);
+   }
+   PL(ans)
    return;
 }
 

@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,36 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+
+   set<ll> st;
+   rep(i,N) st.insert(i);
+
+   min_heap<Pll> que;//time, id
+
+   V<ll> ans(N);
+
+   rep(_,M){
+      ll T,W,S;
+      cin>>T>>W>>S;
+
+      while(!que.empty() && que.top().fi<=T){
+         st.insert(que.top().se);
+         que.pop();
+      }
+
+
+      auto it = st.lower_bound(0);
+      if(it==st.end()) continue;
+      ans[*it] += W;
+
+      que.push({T+S, *it});
+      st.erase(*it);
+   }
+
+   rep(i,N) PL(ans[i])
+
+
 
    return;
 }
@@ -92,3 +125,12 @@ int main() {
    for(int tt = 0; tt<TT; tt++) solve();
    return 0;
 }
+
+/*
+ABC320 5完　寝坊unreted
+A やる
+B 全探索
+C (M*3)**3通りの全探索
+D 重み付きUF
+E setとpriority_queueで愚直
+*/

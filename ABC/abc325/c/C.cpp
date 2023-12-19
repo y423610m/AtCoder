@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,12 +74,50 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#if __has_include(<atcoder/dsu>)
+#include <atcoder/dsu>
+using namespace atcoder;
+//dsu DSU(n);
+//DSU.merge(a,b);
+//if(DSU.same(a,b)){}
+#endif
+
+//DRUL  SENW
+int dx[8] = {1, 0, -1, 0, 1, -1, 1, -1};
+int dy[8] = {0, 1, 0, -1, 1, -1, -1, 1};
+
 
 
 #define endl "\n"
 
 void solve() {
 
+   ll H,W; cin>>H>>W;
+   V<string> S(H); cin>>S;
+auto inGrid = [&](int nx, int ny){
+    if(0<=nx&&nx<H&&0<=ny&&ny<W) return true;
+    return false;
+};
+   ll cnt = 0;
+   V<V<ll>> id(H, V<ll>(W, -1));
+   rep(h,H) rep(w,W) if(S[h][w]=='#'){
+      id[h][w] = cnt++;
+   }
+
+   if(cnt==0) END(0)
+
+   dsu uf(cnt);
+   rep(h,H) rep(w,W) if(S[h][w]=='#'){
+      rep(d,8){
+         ll nx = h + dx[d];
+         ll ny = w + dy[d];
+         if(inGrid(nx, ny) && S[nx][ny]=='#'){
+            uf.merge(id[h][w], id[nx][ny]);
+         }
+      }
+   }
+
+   PL(uf.groups().size())
    
 
    return;

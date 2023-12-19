@@ -76,7 +76,13 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   string S, T; cin>>S>>T;
+   sort(ALL(S));
+   sort(ALL(T));
+   reverse(ALL(T));
+
+   if(S < T) END(Yes)
+   else PL(No)
 
    return;
 }

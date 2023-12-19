@@ -70,13 +70,30 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+// #include "graph/others/periodic_graph.hpp"
+/*
+ll N,M; cin>>N>>M;
+Edges<int> E = readE<int>(M, -1, false);//weighted?
+Graph<int> G(N, E, true, false);//directed? reverse?
+Graph<int> inG(N, E, true, true);//directed? reverse?
+PeriodicGraph<int> pg;
+pg.build(N, G, inG);
+// pg.Proceed(start, k)
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   string S; cin>>S;
+
+   set<char> st;
+   rep(i,N){
+      st.insert(S[i]);
+      if(st.size()==3) END(i+1)
+   }
+   PL(N)
 
    return;
 }

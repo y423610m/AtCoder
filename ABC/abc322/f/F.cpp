@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,125 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#if __has_include(<atcoder/lazysegtree>)
+#include <atcoder/lazysegtree>
+using namespace atcoder;
+#endif
 
+namespace Long1Bits{
+   template<typename T>
+   struct S{
+      T lenL=1;
+      T lenR=1;
+      T long0=1;
+      T long1=0;
+      bool isL1 = false;
+      bool isR1 = false;
+      ll size=1;
+   };
+
+   template<typename T>
+   struct F{
+      T a;
+   };
+
+   template<typename T> S<T> opMax(S<T> l, S<T> r){
+      S<T> s;
+      s.lenR = r.lenR;
+      s.lenL = l.lenL;
+      s.isL1 = l.isL1;
+      s.isR1 = r.isR1;
+      s.long1 = max(r.long1, l.long1);
+      s.long0 = max(r.long0, l.long0);
+      if(l.isR1&&r.isL1){
+         if(s.long1 < l.lenR + r.lenL){
+            s.long1 = l.lenR + r.lenL;
+            if(l.lenR==l.size) s.lenL = s.long1;
+            if(r.lenL==r.size) s.lenR = s.long1;
+         }
+      }
+      if(!l.isR1&&!r.isL1){
+         if(s.long0 < l.lenR + r.lenL){
+            s.long0 = l.lenR + r.lenL;
+            if(l.lenR==l.size) s.lenL = s.long0;
+            if(r.lenL==r.size) s.lenR = s.long0;
+         }
+      }
+      s.size = l.size + r.size;
+      return s;
+   }
+
+   template<typename T> S<T> e(){return S<T>();}
+
+   template<typename T>
+   S<T> FS(F<T> f, S<T> s){
+      if(f.a==0) return s;
+      s.isR1 ^= 1;
+      s.isL1 ^= 1;
+      swap(s.long1, s.long0);
+      return s;
+   }
+
+   template<typename U=ll>
+   F<U> FF(F<U> l, F<U> r){
+      return F<U>{l.a^r.a};
+   }
+
+   template<typename U=ll>
+   F<U> f0(){
+      return F<U>{0};
+   }
+   template<typename T=ll> using LazyRMQ = lazy_segtree<S<T>, opMax<T>, e<T>, F<T>, FS<T>, FF<T>, f0<T>>;
+   /*
+   ll N,Q; cin>>N>>Q;
+   V<ll> A(N); cin>>A;
+   Long1Bit::LazyRMQ<ll> seg(N);
+   Long1Bits::S<ll> s;
+   s.isL1 = true;
+   s.isR1 = true;
+   s.long1 = 1;
+   s.long0 = 0;
+   seg.set(i, s);
+
+   seg.apply(L,R,{1});
+
+   cout<<seg.prod(L,R).long1<<endl;
+   */
+}
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   ll Q; cin>>Q;
+   string S; cin>>S;
+
+   Long1Bits::LazyRMQ<ll> seg(N);
+   rep(i,N){
+      if(S[i]=='1'){
+         Long1Bits::S<ll> s;
+         s.isL1 = true;
+         s.isR1 = true;
+         s.lenL = 1;
+         s.lenR = 1;
+         s.long1 = 1;
+         s.long0 = 0;
+         seg.set(i, s);
+      }
+   }
+
+   rep(q,Q){
+      ll c,L,R;
+      cin>>c>>L>>R;
+      L--;
+      if(c==1){
+         seg.apply(L,R,{1});
+      }
+      else{
+         PL(seg.prod(L,R).long1)
+      }
+   }
 
    return;
 }
@@ -92,3 +208,13 @@ int main() {
    for(int tt = 0; tt<TT; tt++) solve();
    return 0;
 }
+
+/*
+ABC322　５完
+A for
+B T.substr() 誤読した
+C lower_bound
+D 再起関数で全探索．バグらせなかったのえらい
+E 5次元dp.K<5のときはAの末尾に0を追加．メビウス使えば楽そう
+F 遅延セグ木．各区間両端が1かどうか，最長1と最長0を保持すればいいはずなんだけど，なぜか合わず．
+*/

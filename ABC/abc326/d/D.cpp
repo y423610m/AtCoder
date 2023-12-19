@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,66 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   string R,C; cin>>R>>C;
+
+   V<ll> cntR(N);
+   V<V<ll>> cntRABC(N, V<ll>(3));
+   V<ll> cntC(N);
+   V<V<ll>> cntCABC(N, V<ll>(3));
+
+   V<string> G(N, string(N, '.'));
+   bool found = false;
+
+   auto dfs = [&](auto dfs, int id)->void {
+      // EL(id)
+      if(id==N*N){
+         rep(h,N) rep(c,3) if(cntRABC[h][c]==0) return;
+         rep(w,N) rep(c,3) if(cntCABC[w][c]==0) return;
+         found = true;
+         return;
+      }
+
+      int h = id / N;
+      int w = id % N;
+
+      //do nothing
+      dfs(dfs, id+1);
+      if(found) return;
+
+      rep(i,3){
+         char c = 'A'+i;
+         //既出
+         if(cntRABC[h][i]) continue;
+         if(cntCABC[w][i]) continue;
+         //最初？
+         if(cntR[h]==0&&R[h]!=c) continue;
+         if(cntC[w]==0&&C[w]!=c) continue;
+
+         cntR[h]++;
+         cntC[w]++;
+         cntRABC[h][i]++;
+         cntCABC[w][i]++;
+         G[h][w] = c;
+         dfs(dfs, id+1);
+         if(found) return;
+         cntR[h]--;
+         cntC[w]--;
+         cntRABC[h][i]--;
+         cntCABC[w][i]--;
+         G[h][w] = '.';
+      }
+   };
+
+   dfs(dfs, 0);
+
+   if(found){
+      PL(Yes)
+      rep(i,N) PL(G[i])
+   }
+   else{
+      PL(No)
+   }
 
    return;
 }

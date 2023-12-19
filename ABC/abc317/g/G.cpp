@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,53 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+#include "utils/timer.hpp"
+//Timer timer;
+//if(timer.pass()) PL(timer.time())
+//TIMER_LOG(timer, "comment")
+//timer.print();
 
 #define endl "\n"
 
 void solve() {
 
-   
+   Timer timer;
+
+   ll N,M; cin>>N>>M;
+   if(M>N) END(No)
+   V<V<ll>> A(N, V<ll>(M)); cin>>A; A--;
+   V<V<ll>> cnt(M, V<ll>(N));
+
+   sort(ALL(A[0]));
+   // rep(j,M) cnt[j][A[0][j]] = 1;
+
+   while(!timer.pass(1900)){
+      rep(i,N) rep(j,M) cnt[i][j] = 0;
+      rep(j,M) cnt[j][A[0][j]] = 1;
+      bool ok1 = true;
+      repi(i,1,N){
+         bool ok2 = false;
+         rep(_,5){
+            random_shuffle(ALL(A[i]));
+            rep(j,M) if(cnt[j][A[i][j]]!=0) continue;
+            ok2 = true;
+            break;
+         }
+         if(!ok2){
+            i=N+1;
+            ok1 = false;
+            continue;
+         }
+      }
+      if(ok1){
+         PL(Yes)
+         rep(i,N) PL(A[i])
+         return;
+      }
+   }
+
+   PL(No)
+
 
    return;
 }
@@ -92,3 +136,14 @@ int main() {
    for(int tt = 0; tt<TT; tt++) solve();
    return 0;
 }
+
+/*
+ABC317 5完
+A for
+B for
+C 難しいと思ったら制約優しかったのでdfs.
+D dp[i][j]:=i番目の選挙区まで見てj人当選者がいるときの最小鞍替え数.10分くらい勘違いしてた．
+E 人が見ているマスを先に列挙して，あとは普通のグリッドbfs．変数の初期化忘れで1WA.
+F 手も足も出ず
+G 適当な乱宅でいけないかなーと夢を見た．
+*/

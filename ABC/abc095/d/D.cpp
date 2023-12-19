@@ -76,7 +76,51 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N, C; cin>>N>>C;
+   V<ll> X(N), Y(N);
+   rep(i,N) cin>>X[i] >> Y[i];
+
+
+   ll ans = 0;
+   ll sum = 0;
+   queue<Pll> que;
+   multiset<ll> st;
+
+   rep(_,2){
+      st.clear();
+      que = queue<Pll>();
+      que.push({-1, 0});
+      st.insert(0);
+      rep(i,2*N){
+         while(!que.empty() && que.front().fi<=i-N){
+            auto [id, a] = que.front(); que.pop();
+            st.erase(st.find(a));
+         }
+         ll x = X[i%N];
+         ll y = Y[i%N];
+         sum -= x;
+         que.push({i, sum});
+         st.insert(sum);
+         ll candx = sum - *st.begin();
+         chmax(ans, candx-x);
+         sum += y;
+         que.push({i, sum});
+         st.insert(sum);
+         ll candy = sum - *st.begin();
+         chmax(ans, candy-x);
+         ES(x) ES(y) ES(candx) ES(candy) EL(sum)
+         for(auto a:st){
+            ES(a)
+         }
+         EL("")
+         EL(ans)
+      }
+      reverse(ALL(X));
+      reverse(ALL(Y));
+      rep(i,N) X[i] = C - X[i];
+      EL("------")
+   }
+   PL(ans)
 
    return;
 }

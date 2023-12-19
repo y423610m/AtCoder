@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -74,13 +78,43 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 #define endl "\n"
 
-void solve() {
+void solve()
+{
+    long K;
+    cin >> K;
+    long cnt=0;
+    long l=0;
+    while(1){
+        l++;
+        ES(l)
+        int k;
+        k = log10(l) + 1;
+        ES(k)
+        int max;
+        max = 10;
+        bool flag = false;
+        rep(i, k)
+        {
+            long value=l;
+            int c;
+            c = value / long(pow(10, (k - i - 1)));
+            value = value % long(pow(10, (k - i - 1)));
+            ES(max) ES(c) EL(value)
 
-   
-
-   return;
-}
-
+            if (max <= c)
+            {
+                flag = true;
+                break;
+            }
+            max = c;
+        }
+        if (!flag) cnt++;
+        if (cnt==K){
+            cout<<l<<endl;
+            break;
+        }
+        }
+    }
 int main() {
    std::cin.tie(nullptr);
    std::ios_base::sync_with_stdio(false);

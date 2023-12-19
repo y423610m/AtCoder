@@ -8,10 +8,25 @@ using ld = long double;
 using ull = unsigned long long;
 using lll = __int128_t;
 using ulll = __uint128_t;
-constexpr ll MOD = 998'244'353;
-// constexpr ll MOD = 1000'000'007;
+// constexpr ll MOD = 998'244'353;
+constexpr ll MOD = 1000'000'007;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
+
+
+//mint
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
 
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
@@ -76,7 +91,26 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   V<ll> A(N); cin>>A;
+   V<ll> B(N+1);
+   rep(i,N) B[i+1] = B[i] + A[i];
+
+   mint ans = 0;
+
+   //dp[i][j]:=i番目まで見て，j個目である場合の
+   V<V<mint>> dp(N+2, V<mint>(N+2));
+   dp[1][0] = 1;
+   rep(i,N){
+      for(ll j=N;j>=1;j--){
+         dp[j+1][B[i+1]%(j+1)] += dp[j][B[i+1]%j];
+         if(i==N-1){
+            ans += dp[j][B[i+1]%j];
+         }
+      }
+   }
+   // for(ll j=N;j>=1;j--) ans += dp[j][B[N]%j];
+   PL(ans)
 
    return;
 }

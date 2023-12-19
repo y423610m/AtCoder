@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,43 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
+   ll N,A,B,C;
+   cin>>N>>A>>B>>C;
+
+   V<V<ll>> D(N, V<ll>(N)); cin>>D;
    
+   V<V<ll>> dist(N, V<ll>(2, LINF));//pos, isCar
+
+
+   min_heap<tuple<ll,ll,ll>> que;
+   rep(i,2){
+      dist[0][i] = 0;
+      que.push({0, 0, i});//dist, pos, isCar
+   }
+
+   while(!que.empty()){
+      auto [d, p, isCar] = que.top(); que.pop();
+      if(dist[p][isCar]<d) continue;
+
+      rep(to, N){
+         //train
+         ll nd = d + D[p][to] * B + C;
+         if(dist[to][0] > nd){
+            dist[to][0] = nd;
+            que.push({nd, to, false});
+         }
+
+         if(isCar){
+            nd = d + D[p][to] * A;
+            if(dist[to][1] > nd){
+               dist[to][1] = nd;
+               que.push({nd, to, 1});
+            }     
+         }
+      }
+   }
+
+   PL(min(dist[N-1][0], dist[N-1][1]))
 
    return;
 }

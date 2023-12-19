@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,46 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   V<ll> C(N), P(N);
+   V<V<ll>> S(N);
+
+   rep(i,N){
+      cin>>C[i]>>P[i];
+      S[i].resize(P[i]);
+      cin>>S[i];
+   }
+
+   // V<V<ld>> dp(M*2);//ipont以上獲得するのに払う金額の期待値の最小
+
+   //   dp[i][j]:=現在ipointでjのルーレットを使った際の金額の期待値
+   V<ld> dp(M+1);
+   for(ll p=M-1;p>=0;p--){
+      dp[p] = 1e10;
+
+      rep(i,N){
+         ll cnt0 = 0;
+         rep(j,P[i]) if(S[i][j]==0) cnt0++;
+         if(cnt0==P[i]) continue;
+
+         ld cand = 0;
+         rep(j,P[i]){
+            ll s = S[i][j];
+            if(s==0) continue;
+            if(p+s>=M) continue;
+            cand += dp[p+s];
+         }
+         cand /= P[i];
+         cand += C[i];
+         cand = cand * P[i] / (P[i]-cnt0);
+         chmin(dp[p], cand);
+         ES(p) ES(i) EL(cand)
+      }
+   }
+
+   EL(dp)
+
+   PL(dp[0])
 
    return;
 }

@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,78 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include "graph/tree/rooted_tree.hpp"
+/*
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, false);//weighted?
+   Graph<int> G(N, E, false);//directed?
+   //Graph<int> G(N); G.read(M, -1, true, true);
 
+   RootedTree rt(N, G, 0);
+
+   EL(rt.depth)
+   EL(rt.parent)
+   EL(rt.numOfDescendants)
+   rep(i,N) EL(rt.children[i])
+   EL(rt.farestDescendant)
+   parent[root]=root
+   //Edgeは親->子が含まれていれば,有向でも無向でもOK
+*/
+
+#include "math/sum_of_products.hpp"
+/*
+ll ans = sum_of_K_products(A, K);
+-> Σ(ai*aj*...*ak)を計算．
+*/
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N; cin>>N;
+   Edges<int> E = readE<int>(N-1, -1, false);//weighted?
+   Graph<int> G(N, E, false);//directed?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+
+   RootedTree rt(N, G, 0);
+
+   ll ans = 0;
+   V<ll> cnt;
+   cnt.reserve(N);
+   rep(i,N){
+      cnt.clear();
+      cnt.push_back(N-1-rt.numOfDescendants[i]);
+      for(const auto&e:G[i]) if(e.to != rt.parent[i]){
+         cnt.push_back(1+rt.numOfDescendants[e.to]);
+      }
+      ans += sum_of_K_products(cnt, 3);
+   }
+   PL(ans)
+
+   return;
+}
+
+void solve2() {
+
+   ll N; cin>>N;
+   Edges<int> E = readE<int>(N-1, -1, false);//weighted?
+   Graph<int> G(N, E, false);//directed?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+
+   RootedTree rt(N, G, 0);
+
+   ll ans = N*(N-1)*(N-2)/6;
+   V<ll> cnt;
+   cnt.reserve(N);
+   rep(i,N){
+      cnt.clear();
+      cnt.push_back(N-1-rt.numOfDescendants[i]);
+      for(const auto&e:G[i]) if(e.to != rt.parent[i]){
+         cnt.push_back(1+rt.numOfDescendants[e.to]);
+      }
+      ans -= sum_of_K_products(cnt, 2);
+   }
+   PL(ans)
 
    return;
 }

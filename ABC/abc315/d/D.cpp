@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,51 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll H,W; cin>>H>>W;
+   V<string> CG(H); cin>>CG;
+   V<V<ll>> G(H, V<ll>(W));
+   rep(h,H) rep(w,W) G[h][w] = int(CG[h][w]-'a');
+
+   V<V<ll>> R(H, V<ll>(27));
+   V<V<ll>> C(W, V<ll>(27));
+   V<ll> cntH(H, W), cntW(W, H);
+   rep(h,H) rep(w,W){
+      R[h][G[h][w]]++;
+      C[w][G[h][w]]++;
+   }
+
+   queue<Pll> que;
+   while(1){
+      rep(h,H) if(cntH[h]>=2){
+         rep(c,26) if(cntH[h]==R[h][c]){
+            rep(w,W) if(G[h][w]==c) que.push({h,w});
+         }
+      }
+      rep(w,W) if(cntW[w]>=2){
+         rep(c,26) if(cntW[w]==C[w][c]){
+            rep(h,H) if(G[h][w]==c) que.push({h,w});
+         }
+      }
+
+      if(que.size()==0) break;
+
+      while(!que.empty()){
+         auto [h,w] = que.front(); que.pop();
+         if(G[h][w]!=26){
+            cntH[h]--;
+            cntW[w]--;
+            R[h][G[h][w]]--;
+            C[w][G[h][w]]--;
+            G[h][w] = 26;
+         }
+      }
+   }
+
+   ll ans = 0;
+   rep(h,H) rep(w,W){
+      if(G[h][w]!=26) ans++;
+   }
+   PL(ans)
 
    return;
 }

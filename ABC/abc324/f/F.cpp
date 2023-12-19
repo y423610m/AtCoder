@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,58 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include "graph/graph_template.hpp"
+/*
+   ll N,M; cin>>N>>M;
+   Edges<int> E = readE<int>(M, -1, true);//weighted?
+   Graph<int> G(N, E, false, false);//directed? reverse?
+   //Graph<int> G(N); G.read(M, -1, true, true);
+*/
 
+template<typename T, typename F>
+T binSearch(T ok, T ng, F check){
+   while(abs(ok-ng)>1e-10){
+       T mid = (ok+ng)/2;
+       if(check(mid)) ok=mid;
+       else ng=mid;
+   }
+   return ok;
+}
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   V<Pll> BC(M);
+
+   Edges<ll> E;
+   rep(i,M){
+      ll u,v,b,c;
+      cin>>u>>v;
+      u--, v--;
+      E.push_back({u, v, 0, i});
+      cin>>BC[i];
+   }
+   Graph<ll> G(N, E, true, false);//directed? reverse?
+
+   auto check = [&](auto x){
+      V<ld> dp(N, -LINF);
+      dp[0] = 0;
+      rep(p,N){
+         for(const auto& e:G[p]){
+            auto [b, c] = BC[e.id];
+            chmax(dp[e.to], dp[p]+b-x*c);
+         }
+      }
+
+      if(dp.back()>=0.0) return true;
+      return false;
+   };
+
+   auto ans = binSearch(-1.0, 1e9+10, check);
+
+   PL(ans)
 
    return;
 }

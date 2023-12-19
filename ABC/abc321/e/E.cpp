@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -70,13 +74,77 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+// #define ll lll
 
+//1の数
+//__builtin_popcount()
+//__builtin_popcountll()
+//下から初めて1が現れる場所(1-indexed)
+//__builtin_ffs()
+//__builtin_ffsll()
+//先頭に何個0があるか
+//__builtin_clz()
+//__builtin_clzll()
+//末尾に何個0があるか
+//__builtin_ctz()
+//__builtin_ctzll()
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll N,X,K; cin>>N>>X>>K;
+   if(K==0) END(1)
+
+   auto f = [&](ll x, ll k, bool right)->ll {
+      if(k==0) return 0;
+      ll l = x;
+      rep(i,k){
+         l <<= 1;
+         if(l>N) return 0;
+      }
+      if(right){
+         lll tmp = l;
+         tmp += 1LL<<(k-1);
+         if(tmp>N) return 0;
+         l += 1LL<<(k-1);
+      }
+      if(l<0) return 0;
+      ll r = l - 1 + (1LL<<(k-1));
+      chmin(r, N);
+      if(l<=N){
+         ES(l) EL(r)
+         return r - l + 1;
+      }
+      
+      return 0;
+   };
+
+   ll ans = f(X, K, false) + f(X, K, true);
+   EL(ans)
+
+   ll p = X;
+   while(true){
+      if(p==1) break;
+      ll nxt = p/2;
+      K--;
+      
+      if(K==0){
+         ans++;
+         break;
+      }
+      //p is left
+      if(p%2==0){
+         ans += f(nxt,K,true);
+      }
+      else{
+         ans += f(nxt,K,false);
+      }
+      p = nxt;
+   }
+
+   long long a = ans;
+   cout<<a<<endl;
 
    return;
 }
@@ -88,7 +156,7 @@ int main() {
    // std::cout << std::setbase(16);//8進数表示.8,10,16のみ
    // stoll(s,nullptr,base);
    int TT = 1;
-   //cin>>TT;
+   cin>>TT;
    for(int tt = 0; tt<TT; tt++) solve();
    return 0;
 }

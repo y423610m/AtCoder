@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast,unroll-loops,no-stack-protector")
+#pragma GCC optimize(2)
 #include <bits/stdc++.h>
 using namespace std;
 // #include <atcoder/all>
@@ -11,7 +13,10 @@ using ulll = __uint128_t;
 constexpr ll MOD = 998'244'353;
 // constexpr ll MOD = 1000'000'007;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
-// #pragma comment(linker, "/stack:1000000000")
+
+
+//mint
+
 
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
@@ -70,25 +75,107 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+#include "graph/tree/complete_binary_tree.hpp"
+/*
+   CompleteBinaryTree cbt;
+   cbt.SetN(N);//頂点数Nの場合
+   //cbt.SetDepth(D);//深さD
 
+   // 頂点は1-index
+   ll n = cbt.CountDist(v, dist);//vから距離dの頂点数
+   ll n = cbt.CountDescendants(v);//vの子孫数
+   ll n = cbt.CountDescendantsDist(v, dist);//子孫の中で距離distの頂点数
+
+   //depth, posは0-index
+   auto [d, pos] = cbt.GetPosition(v);
+   ll v = cbt.GetIndex(d, pos);
+   abc321e
+*/
+	const int S = 1<<5;
+	char buf[S], *p = buf, *q = buf;
+
+inline char readchar() {
+
+	if(p == q && (q = (p=buf)+fread(buf,1,S,stdin)) == buf) return EOF;
+	return *p++;
+}
+inline int nextint() {
+	int x = 0, c = readchar();
+	while(('0' > c || c > '9') && c!=EOF) c = readchar();
+	while('0' <= c && c <= '9') x = x*10 + (c^'0'), c = readchar();
+	return x;
+}
 
 #define endl "\n"
 
-void solve() {
+// int A[(1<<16)+10];
+// int tournament[(1<<16+1)];
 
-   
+// void solve() {
 
-   return;
+//    ll N; cin>>N;
+//    rep(i,1<<N) cin>>A[i];
+
+//    // V<ll> A(1<<N); cin>>A;
+//    // V<ll> tournament(1<<N+1);
+
+//    CompleteBinaryTree cbt;
+//    cbt.SetN(1<<N);//頂点数Nの場合
+
+//    int idx = cbt.GetIndex(cbt.depth-1, 0);
+//    rep(i,1<<N) tournament[idx+i] = i;
+
+//    for(ll d=cbt.depth-1;d>=0;d--){
+//       for(ll i=0;i<cbt.GetSize(d);i+=2){
+//          ll p = cbt.GetIndex(d, i);
+//          ll idl = tournament[p];
+//          ll idr = tournament[p+1];
+//          if(A[idl]>A[idr]) tournament[p/2] = idl;
+//          else tournament[p/2] = idr;
+//       }
+//    }
+//    // EL(tournament)
+//    PL(tournament[2]+tournament[3]-tournament[1]+1)
+
+//    return;
+// }
+
+void solve2(){
+   int N=nextint();
+   int M = 1<<N;
+   // for(int i=0;i<M;i++) cin>>A[i];
+
+   int n = 1<<(N-1);
+
+   int lid = -1, l = -1;
+   for(int i=0;i<n;i++){
+      int a = nextint();
+      if(a>l){
+         lid = i;
+         l = a;
+      }
+   }
+   int rid = -1, r = -1;
+   for(int i=n;i<M;i++){
+      int a = nextint();
+      if(a>r){
+         rid = i;
+         r = a;
+      }
+   }
+
+   if(r<l) printf("%d\n", rid+1);
+   else printf("%d\n", lid+1);
 }
 
 int main() {
-   std::cin.tie(nullptr);
-   std::ios_base::sync_with_stdio(false);
-   std::cout << std::fixed << std::setprecision(15);//小数点以下
+   // std::cin.tie(nullptr);
+   // std::ios_base::sync_with_stdio(false);
+   // std::cout << std::fixed << std::setprecision(15);//小数点以下
    // std::cout << std::setbase(16);//8進数表示.8,10,16のみ
    // stoll(s,nullptr,base);
    int TT = 1;
    //cin>>TT;
-   for(int tt = 0; tt<TT; tt++) solve();
+   for(int tt = 0; tt<TT; tt++) solve2();
    return 0;
 }

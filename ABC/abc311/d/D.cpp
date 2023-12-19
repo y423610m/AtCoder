@@ -70,13 +70,56 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
+//DRUL  SENW
+int dx[4] = {1, 0, -1, 0};
+int dy[4] = {0, 1, 0, -1};
+
 
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll H,W; cin>>H>>W;
+   V<string> S(H); cin>>S;
+
+auto inGrid = [&](int nx, int ny){
+    if(0<=nx&&nx<H&&0<=ny&&ny<W) return true;
+    return false;
+};
+
+   V<V<bool>> stoped(H, V<bool>(W, false));
+   V<V<bool>> passed(H, V<bool>(W, false));
+
+   queue<Pll> que;
+   que.push({1,1});
+   passed[1][1] = true;
+   stoped[1][1] = true;
+   while(!que.empty()){
+      auto [h,w] = que.front(); que.pop();
+      rep(d,4){
+         ll nx = h+dx[d];
+         ll ny = w+dy[d];
+         while(inGrid(nx, ny) && S[nx][ny] == '.'){
+            passed[nx][ny] = true;
+            nx += dx[d];
+            ny += dy[d];
+         }
+         nx -= dx[d];
+         ny -= dy[d];         
+         if(!stoped[nx][ny]){
+            que.push({nx, ny});
+            stoped[nx][ny] = true;
+         }
+      }
+   }
+
+
+
+
+   ll ans = 0;
+   rep(h,H) rep(w,W) if(passed[h][w]) ans++;
+   PL(ans)
 
    return;
 }

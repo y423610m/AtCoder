@@ -70,14 +70,49 @@ template<typename T, typename U> void chmin(T& t, const U& u) {if (t > u) t = u;
 template<typename T, typename U> void chmax(T& t, const U& u) {if (t < u) t = u;}
 template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S& s) {if(t < u){t = u;} if(t > s){t = s;}}//clamp
 
-
+template<typename T, typename F>
+T binSearch(T ok, T ng, F check){
+   while(abs(ok-ng)>1){
+       T mid = (ok+ng)/2;
+       if(check(mid)) ok=mid;
+       else ng=mid;
+   }
+   return ok;
+}
 
 #define endl "\n"
 
 void solve() {
 
-   
+   ll H,W, N; cin>>H>>W>>N;
+   V<V<ll>> acc(H+1, V<ll>(W+1));
+   V<Pll> AB(N); cin>>AB; //AB--;
+   for(auto [a,b]:AB){
+      acc[a][b]++;
+   }
 
+   rep(h,H) rep(w,W) {
+      acc[h+1][w+1] += acc[h][w+1] + acc[h+1][w] - acc[h][w];
+   }
+
+   // rep(h,H+1) EL(acc[h])
+
+
+   ll ans = 0;
+   ll D = min(H,W);
+   rep(h,H) rep(w,W){
+      auto check = [&](auto d){
+         if(h+d>=H) return false;
+         if(w+d>=W) return false;
+         ll cnt = acc[h+d+1][w+d+1] - acc[h][w+d+1] - acc[h+d+1][w] + acc[h][w];
+         if(cnt) return false;
+         return true;
+      };
+      ll cand = binSearch(0LL, D+1, check);
+      ans += cand;
+      if(check(0)) ans++;
+   }
+   PL(ans)
    return;
 }
 

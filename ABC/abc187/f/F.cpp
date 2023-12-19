@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,55 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll N,M; cin>>N>>M;
+   V<ll> G(N);
+   rep(i,M){
+      int a,b;
+      cin>>a>>b;
+      a--, b--;
+      G[a] |= 1<<b;
+      G[b] |= 1<<a;
+   }
+
+   V<ll> dp(1<<N);
+   rep(i,1<<N) dp[i] = popcount(ull(i));
+   dp[0] = 1;
+
+   rep(mask,1<<N){
+      rep(bit,N){
+         if(dp[mask]==1&&(G[bit]&mask)==mask) dp[mask|(1<<bit)] = 1;
+      }
+   }
+
+   // rep(i,N) rep(j,1<<N){
+   //    if(dp[j]==1&&(G[i]&j)==j) dp[j|(1<<i)] = 1;
+   // }
+
+   rep(mask,1<<N){
+      ll j = mask;
+      ll cnt = 0;
+      while(j){
+         chmin(dp[mask], dp[j]+dp[mask^j]);
+         j--;
+         j&= mask;
+         cnt++;
+      }
+      ES(cnt) EL(popcount(ull(mask)))
+   }
+
+   // repi(mask, 1, 1<<N){
+   //    rep(bit,N) if((mask&(1<<bit))==0){
+   //       bool ok = true;
+   //       rep(bit2, N) if(mask&(1<<bit2)){
+   //          if(!G[a][b]) ok = false;
+   //       }
+         
+   //       if(ok) chmin(dp[mask|(1<<bit)], dp[mask]);
+   //       else chmin(dp[mask|(1<<bit)], dp[mask]+1);
+   //    }
+   // }
+   // EL(dp)
+   PL(dp.back())
 
    return;
 }

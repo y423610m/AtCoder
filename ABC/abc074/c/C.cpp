@@ -13,6 +13,10 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -76,7 +80,46 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 
 void solve() {
 
-   
+   ll A,B,C,D,E,F;
+   cin>>A>>B>>C>>D>>E>>F;
+
+   //dp[i][j]:=総量がig,水がj*100gであるときの砂糖の量
+   ll M = 33;
+   V<V<ll>> dp(F+1, V<ll>(M+1, -LINF));
+   dp[0][0] = 0;
+   rep(i,F){
+      rep(j,M){
+         if(dp[i][j]==-LINF) continue;
+         if(i+A*100<=F) chmax(dp[i+A*100][j+A], dp[i][j]);
+         if(i+B*100<=F) chmax(dp[i+B*100][j+B], dp[i][j]);
+      }
+   }
+
+   rep(i,F){
+      rep(j,M){
+         if(dp[i][j]==-LINF) continue;
+         if(i+C<=F && (j+C)*E>=dp[i][j]+C) chmax(dp[i+C][j], dp[i][j]+C);
+         if(i+D<=F && (j+D)*E>=dp[i][j]+D) chmax(dp[i+D][j], dp[i][j]+D);
+      }
+   }
+
+   rep(i,2) EL(dp[i])
+
+   ll w = 100*A;
+   ll s = 0;
+
+   rep(i,F+1) rep(j, M+1){
+      if(j==0) continue;
+      if(dp[i][j]==-LINF) continue;
+      // s/(w+s) < s/()
+      ES(i) ES(j) EL(dp[i][j])
+      if( s*i<dp[i][j]*(w+s) && dp[i][j] <= j*E ){
+         w = j*100;
+         s = dp[i][j];
+      }
+   }
+
+   PS(w+s) PL(s)
 
    return;
 }

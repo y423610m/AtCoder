@@ -13,6 +13,24 @@ constexpr ll MOD = 998'244'353;
 // #define _GLIBCXX_DEQUE_BUF_SIZE 512
 // #pragma comment(linker, "/stack:1000000000")
 
+
+//mint
+
+#if __has_include(<atcoder/modint>)
+#include <atcoder/modint>
+using namespace atcoder;
+using mint = atcoder::static_modint<MOD>;
+// using mint = atcoder::modint;
+// mint::set_mod(MOD);
+//制約: a/b -> gcd(b,mod)==1
+template<int m> ostream &operator<<(ostream &os, const atcoder::static_modint<m> x) {os<<x.val();return os;}
+template<int m> istream &operator>>(istream &is, atcoder::static_modint<m>& x){ll val; is >> val; x = val; return is;}
+ostream &operator<<(ostream &os, const atcoder::modint x) {os<<x.val();return os;}
+istream &operator>>(istream &is, atcoder::modint& x){ll val; is >> val; x = val; return is;}
+#endif
+
+#include "math/matrix/eigen_template.hpp"
+
 // int:[-2'147'483'648 : 2'147'483'647]
 // ll:[-9'223'372'036'854'775'808 : 9'223'372'036'854'775'807]
 constexpr ll INF = (1LL<<30)-1;
@@ -75,6 +93,39 @@ template<typename T, typename U, typename S> void chmm(T& t, const U& u, const S
 #define endl "\n"
 
 void solve() {
+   Eigen::Vector<double,3> a,b;
+   // cin>>a>>b;
+   // PL(a(0,0))
+   // PL(a.dot(b))
+   // PL(a.cross(b))
+
+   Eigen::MatrixX<char> S(3,3); cin>>S;
+   EL(S)
+
+
+   Eigen::Matrix<int, 3, 3> A;
+   Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> B(2,3);
+   // cin>>A;
+   // EL(A)
+   cin>>B;
+   EL(B)
+   EL(B.col(0))
+   B.col(0) = B.col(1);
+   EL(B)
+   EL(Eigen::Dynamic)
+
+   ll N,K; cin>>N>>K;
+   map<ll,ll> mp;
+
+   rep(k,K){
+      ll d; cin>>d;
+      rep(i,d){
+         ll a; cin>>a;
+         mp[a]++;
+      }
+   }
+
+   PL(N-mp.size())
 
    
 
