@@ -162,7 +162,7 @@ void solve() {
             visited[i] = true;
             dfs(dfs, i);
          }
-         dp[n] += div2[n] * C.C(n-1, i-1) * dp[i];
+         dp[n] += div2[n] * C.C(n-1, i) * dp[i+1];
          ES(n) ES(i) EL(dp[n])
       }
       ES(n) EL(dp[n])
@@ -173,14 +173,31 @@ void solve() {
       dp[n] /= mint(1) - div2[n];
    };
 
-   // repi(i,1,N+1) dfs(dfs, i);
-   dp[1] = 1;
-   for(ll i=2;i<=N;i++){
-      // dp[i] = dp[i-1] / 2 + dp[i]/2;
-      // dp[i] (1-1/2) = dp[i-1] /2;
-      // dp[i] * (1/2) = dp[i-1] / 2;
-      dp[i] = dp[i-1]/2;
-      dp[i] = dp[i] * 2;
+   // dp[0] = 0;
+   // dp[1] = 1;
+
+   for(ll n=2;n<=N;n++){//n人並んでる
+      dp[n] = 0;
+      dp[n] += div2[n-1];// (1/2)^n-1
+      for(ll i=1;i<=n-2;i++){//末尾以外に何回push_backされたか
+         // (1/2)^n
+         dp[n] += dp[i+1] * C.C(n-1, i) * div2[n];
+      }
+      dp[n] /= 1-div2[n];
+   }
+   EL(dp)
+
+
+   //repi(i,1,N+1) dfs(dfs, i);
+   if(0){
+      dp[1] = 1;
+      for(ll i=2;i<=N;i++){
+         // dp[i] = dp[i-1] / 2 + dp[i]/2;
+         // dp[i] (1-1/2) = dp[i-1] /2;
+         // dp[i] * (1/2) = dp[i-1] / 2;
+         dp[i] = dp[i-1]/2;
+         dp[i] = dp[i] * 2;
+      }
    }
    EL(dp)
    EL(dp[N]/2)

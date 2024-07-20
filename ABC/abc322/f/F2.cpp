@@ -109,6 +109,9 @@ void solve() {
       if(S[i]=='1'){
          seg.set(i, LongContinuousBits::GetS1<ll>());
       }
+      else{
+         seg.set(i, LongContinuousBits::GetS0<ll>());
+      }
    }
 
    rep(q,Q){
@@ -120,6 +123,37 @@ void solve() {
       }
       else{
          PL(seg.prod(L,R).long1)
+      }
+   }
+
+   return;
+}
+
+void solve2() {
+
+   ll N; cin>>N;
+   ll Q; cin>>Q;
+   string S; cin>>S;
+
+   LongContinuousBits::LazyRMQ<ll> seg(N);
+   rep(i,N){
+      if(S[i]=='0'){
+         seg.set(i, LongContinuousBits::GetS1<ll>());
+      }
+      else{
+         seg.set(i, LongContinuousBits::GetS0<ll>());
+      }
+   }
+
+   rep(q,Q){
+      ll c,L,R;
+      cin>>c>>L>>R;
+      L--;
+      if(c==1){
+         seg.apply(L,R,{1,0});
+      }
+      else{
+         PL(seg.prod(L,R).long0)
       }
    }
 
